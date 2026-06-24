@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
 public abstract class Animal : MonoBehaviour
 {
@@ -15,7 +14,6 @@ public abstract class Animal : MonoBehaviour
     [SerializeField] private int animalHungerMax;
     public int AnimalHungerMax { get { return animalHungerMax; } set { animalHungerMax = value; } }
     
-    //[SerializeField] private int animalHunger; //Should this even need to be here?
     public int AnimalHunger { get; /*{ return animalHunger; }*/ set; /*{ animalHunger = value; }*/ }
 
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
@@ -34,8 +32,6 @@ public abstract class Animal : MonoBehaviour
 
     public virtual void TravelToGoal()
     {
-        //transform.LookAt(new Vector3(EndGoal.position.x, transform.position.y, EndGoal.position.z), Vector3.up);
-        //rig.position = Vector3.MoveTowards(transform.position, EndGoal.position, MovementSpeed * Time.fixedDeltaTime);
         agent.SetDestination(EndGoal.position);
     }
 
