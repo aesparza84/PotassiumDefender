@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovementSettings
   groundCheckSize: 0.35
   groundCheckDistance: 0.5
-  jumpHeight: 2
-  jumpSpeed: 0
+  jumpHeight: 6
+  gravityAccel: 5
   gravity: 9
   horizontalAcceleration: 20
   maxHorizontalSpeed: 6

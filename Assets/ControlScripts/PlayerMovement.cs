@@ -23,9 +23,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Jump")]
     [SerializeField] private float jumpHeight;
-    [SerializeField] private float jumpSpeed;
     [SerializeField] private float gravity;
-
+    [SerializeField] private float gravityAccel;
 
     [Header("Speed")]
     [SerializeField] private float horizontalAcceleration = 4;
@@ -68,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
             this.groundCheckSize = _settings.groundCheckSize;
             this.groundCheckDistance = _settings.groundCheckDistance;
             this.jumpHeight = _settings.jumpHeight;
-            this.jumpSpeed = _settings.jumpSpeed;
+            this.gravityAccel = _settings.gravityAccel;
             this.gravity = _settings.gravity;
             this.horizontalAcceleration = _settings.horizontalAcceleration;
             this.maxHorizontalSpeed = _settings.maxHorizontalSpeed;
@@ -146,19 +145,19 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Jump()
     {
-        if (!isGrounded || jumpPressed) 
+        if (!isGrounded)
+            return;
+
+        if (jumpPressed) 
             return;
 
         OnJump?.Invoke();
 
         jumpPressed = true;
+        isJumping = true;
         isGrounded = false;
 
         groundCheckTimer = groundCheckDisableTimer;
-
-        //Exact jump height
-        //float jumpVel = Mathf.Sqrt(2 * gravity * jumpHeight);
-        //float impulse = jumpVel * rigidBody.mass;
         rigidBody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
     }
 
@@ -203,14 +202,16 @@ public class PlayerMovement : MonoBehaviour
         if (Physics.SphereCast(groundCheckOrigin.position, groundCheckSize, Vector3.down, out RaycastHit hit, groundCheckDistance))
         {           
 
+            //Initial 'Grounded' reset
             if (!isGrounded)
             {
                 isGrounded = true;
+                isJumping = false;
                 OnLand?.Invoke(rigidBody.linearVelocity.y);
                 Debug.Log($"Land Vel - {rigidBody.linearVelocity.y}");
             }
 
-            //Keep RigidBody above an offest on ground
+            //Set Rigidbody to ground
             if (isGrounded)
             {
                 groundPoint = hit.point;
@@ -222,7 +223,12 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            isGrounded = false;
+            //Initial set to 'Grounded'
+            if (isGrounded)
+            {
+                isGrounded = false;
+            }
+
         }
     }
 
@@ -263,8 +269,8 @@ public class PlayerMovement : MonoBehaviour
         if (!isGrounded)
         {
             //apply gravity on the RigidBody
-            currGravity += gravity * Time.fixedDeltaTime;
-            rigidBody.AddForce(Vector3.down * currGravity,ForceMode.Force);
+            currGravity += gravity * gravityAccel * Time.fixedDeltaTime;
+            rigidBody.AddForce(Vector3.down * currGravity, ForceMode.Force);
 
             //clamp Y-Magnitude
             Vector3 verticalMag = new Vector3(0, rigidBody.linearVelocity.y, 0);

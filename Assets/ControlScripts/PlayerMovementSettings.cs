@@ -9,7 +9,7 @@ public class PlayerMovementSettings : ScriptableObject
 
     [Header("Jump")]
     public float jumpHeight = 0;
-    public float jumpSpeed = 0;
+    public float gravityAccel = 0;
     public float gravity = 9;
 
     [Header("Speed")]
