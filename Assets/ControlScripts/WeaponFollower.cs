@@ -4,12 +4,10 @@ public class WeaponFollower : MonoBehaviour
 {
     [SerializeField] private Transform targetTransform;
 
-    private void Update()
+    private void FixedUpdate()
     {
-        if (targetTransform != null)
-        {
-            transform.position = targetTransform.position;
-            transform.rotation = targetTransform.rotation;
-        }
+        transform.position = targetTransform.position;
+        transform.rotation = targetTransform.rotation;
     }
+
 }

@@ -160,36 +160,6 @@ public class PlayerMovement : MonoBehaviour
         groundCheckTimer = groundCheckDisableTimer;
         rigidBody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
     }
-
-    private void GravityGroundCheck()
-    {
-        Vector3 origin = new Vector3(groundCheckOrigin.position.x,
-                groundCheckOrigin.position.y - groundCheckDistance,
-                groundCheckOrigin.position.z);
-
-        if (Physics.SphereCast(origin, groundCheckSize, Vector3.down, out RaycastHit hit, 1) 
-            && Vector3.Angle(hit.normal,Vector3.up) < 60)
-        {
-            isGrounded = true;
-
-            currGravity = 0.0f;
-            Vector3 targetPos = rigidBody.position;
-            targetPos.y = hit.point.y;
-
-            rigidBody.position = Vector3.Lerp(rigidBody.position, targetPos, Time.fixedDeltaTime * 5);
-        }
-        else
-        {
-            isGrounded = false;
-
-            currGravity -= gravity * Time.deltaTime;
-            if (currGravity > maxFallSpeed)
-                currGravity = maxFallSpeed;
-
-            Vector3 vertical = new Vector3(0,currGravity,0);
-            rigidBody.AddForce(vertical, ForceMode.VelocityChange);
-        }
-    }
     private void GroundCheck()
     {
         if (groundCheckOrigin == null)
@@ -211,19 +181,15 @@ public class PlayerMovement : MonoBehaviour
                 Debug.Log($"Land Vel - {rigidBody.linearVelocity.y}");
             }
 
-            //Set Rigidbody to ground
-            if (isGrounded)
-            {
-                groundPoint = hit.point;
+            groundPoint = hit.point;
 
-                Vector3 targetPos = rigidBody.position;
-                targetPos.y = hit.point.y;
-                rigidBody.position = Vector3.Lerp(rigidBody.position, targetPos, Time.fixedDeltaTime * 5);
-            }
+            Vector3 targetPos = rigidBody.position;
+            targetPos.y = hit.point.y;
+            rigidBody.position = Vector3.Lerp(rigidBody.position, targetPos, Time.fixedDeltaTime * 5);
         }
         else
         {
-            //Initial set to 'Grounded'
+            //Initial set to 'un-Grounded'
             if (isGrounded)
             {
                 isGrounded = false;
