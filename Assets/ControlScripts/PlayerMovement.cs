@@ -1,3 +1,5 @@
+using System;
+using Unity.Cinemachine;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -7,6 +9,9 @@ public class PlayerMovement : MonoBehaviour
     /// Raw input reading
     /// </summary>
     private PlayerControlHub inputHub;
+
+    [Header("Settings Config")]
+    [SerializeField] private PlayerMovementSettings _settings;
 
     [Header("Components")]
     [SerializeField] private Rigidbody rigidBody;
@@ -31,6 +36,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float movementDrag = 1;
     [SerializeField] private float idleDrag = 5;
 
+    [SerializeField] private LayerMask groundMask;
+
     private float currGravity;
     private float currSpeed;
     private float currFall;
@@ -39,8 +46,37 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 finalHorizontal;
 
     private bool jumpPressed;
+    private bool isJumping;
     private bool isGrounded;
+    private Vector3 groundPoint;
 
+
+    private float groundCheckDisableTimer=0.5f;
+    private float groundCheckTimer;
+
+    //Events
+    public event Action OnJump;
+    public event Action<float> OnLand;
+    public event Action<Vector2> OnMove;
+    public event Action OnIdle;
+    
+
+    private void Awake()
+    {
+        if (_settings != null)
+        {
+            this.groundCheckSize = _settings.groundCheckSize;
+            this.groundCheckDistance = _settings.groundCheckDistance;
+            this.jumpHeight = _settings.jumpHeight;
+            this.jumpSpeed = _settings.jumpSpeed;
+            this.gravity = _settings.gravity;
+            this.horizontalAcceleration = _settings.horizontalAcceleration;
+            this.maxHorizontalSpeed = _settings.maxHorizontalSpeed;
+            this.maxFallSpeed = _settings.maxFallSpeed;
+            this.movementDrag = _settings.movementDrag;
+            this.idleDrag = _settings.idleDrag;
+        }
+    }
     void Start()
     {
         if (rigidBody == null)
@@ -79,62 +115,110 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        HorizontalMovement();
         GroundCheck();
+        //GravityGroundCheck();
+        HorizontalMovement();
         VerticalMovement();
     }
 
+    private void Update()
+    {
+        //Disable groundcheck
+        if (groundCheckTimer > 0.0f)
+        {
+            groundCheckTimer -= Time.deltaTime;
+        }
+        else
+        {
+            groundCheckTimer = 0.0f;
+        }
 
+        DebugRays();
+    }
+
+    private void DebugRays()
+    {
+        //Horizontal
+        Debug.DrawRay(transform.position, new Vector3(rigidBody.linearVelocity.x, 0, rigidBody.linearVelocity.z), Color.red);
+
+        //Vertical
+        Debug.DrawRay(transform.position, new Vector3(0, rigidBody.linearVelocity.y, 0), Color.blue);
+    }
     private void Jump()
     {
         if (!isGrounded || jumpPressed) 
             return;
 
+        OnJump?.Invoke();
+
         jumpPressed = true;
+        isGrounded = false;
 
-        Vector3 jumpForce = new Vector3(0, Mathf.Sqrt(-2.0f* currGravity * jumpHeight),0);
-        rigidBody.AddForce(jumpForce, ForceMode.Force);
+        groundCheckTimer = groundCheckDisableTimer;
+
+        //Exact jump height
+        //float jumpVel = Mathf.Sqrt(2 * gravity * jumpHeight);
+        //float impulse = jumpVel * rigidBody.mass;
+        rigidBody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
     }
-    private void VerticalMovement()
-    {
-        if (!isGrounded)
-        {
-            currGravity += gravity * Time.fixedDeltaTime;
-            rigidBody.AddForce(Vector3.down * currGravity,ForceMode.Force);
 
-            //clamp gravity
-            Vector3 verticalMag = new Vector3(0, rigidBody.linearVelocity.y, 0);
-            if (verticalMag.magnitude > maxFallSpeed)
-            {
-                verticalMag = verticalMag.normalized * maxFallSpeed;
-                rigidBody.linearVelocity = new Vector3(rigidBody.linearVelocity.x, verticalMag.y, rigidBody.linearVelocity.z);
-            }
-            
-            rigidBody.linearDamping = 0.0f;
+    private void GravityGroundCheck()
+    {
+        Vector3 origin = new Vector3(groundCheckOrigin.position.x,
+                groundCheckOrigin.position.y - groundCheckDistance,
+                groundCheckOrigin.position.z);
+
+        if (Physics.SphereCast(origin, groundCheckSize, Vector3.down, out RaycastHit hit, 1) 
+            && Vector3.Angle(hit.normal,Vector3.up) < 60)
+        {
+            isGrounded = true;
+
+            currGravity = 0.0f;
+            Vector3 targetPos = rigidBody.position;
+            targetPos.y = hit.point.y;
+
+            rigidBody.position = Vector3.Lerp(rigidBody.position, targetPos, Time.fixedDeltaTime * 5);
         }
         else
         {
-            currGravity = 0.0f;
-        }
+            isGrounded = false;
 
-        currFall = new Vector3(0, rigidBody.linearVelocity.y, 0).magnitude;
+            currGravity -= gravity * Time.deltaTime;
+            if (currGravity > maxFallSpeed)
+                currGravity = maxFallSpeed;
+
+            Vector3 vertical = new Vector3(0,currGravity,0);
+            rigidBody.AddForce(vertical, ForceMode.VelocityChange);
+        }
     }
     private void GroundCheck()
     {
         if (groundCheckOrigin == null)
             return;
 
-        Vector3 origin = new Vector3(groundCheckOrigin.position.x,
-                groundCheckOrigin.position.y - groundCheckDistance,
-                groundCheckOrigin.position.z);
+        if (groundCheckTimer > 0.0f)
+            return;
 
-        if (Physics.SphereCast(groundCheckOrigin.position,
-            groundCheckSize,
-            Vector3.down,
-            out RaycastHit hit,
-            groundCheckDistance))
-        {
-            isGrounded = true;
+        //Ray cast the ground sphere
+        if (Physics.SphereCast(groundCheckOrigin.position, groundCheckSize, Vector3.down, out RaycastHit hit, groundCheckDistance))
+        {           
+
+            if (!isGrounded)
+            {
+                isGrounded = true;
+                OnLand?.Invoke(rigidBody.linearVelocity.y);
+                Debug.Log($"Land Vel - {rigidBody.linearVelocity.y}");
+            }
+
+            //Keep RigidBody above an offest on ground
+            if (isGrounded)
+            {
+                groundPoint = hit.point;
+
+                Vector3 targetPos = rigidBody.position;
+                targetPos.y = hit.point.y;
+                rigidBody.position = Vector3.Lerp(rigidBody.position, targetPos, Time.fixedDeltaTime * 5);
+            }
         }
         else
         {
@@ -149,6 +233,7 @@ public class PlayerMovement : MonoBehaviour
             if (rigidBody.linearDamping != movementDrag)
                 rigidBody.linearDamping = movementDrag;
 
+            //APply camera direction
             finalHorizontal = (transform.forward * dirInput.z) + (transform.right * dirInput.x);
 
             rigidBody.AddForce(finalHorizontal.normalized * horizontalAcceleration * Time.fixedDeltaTime, ForceMode.VelocityChange);
@@ -170,7 +255,33 @@ public class PlayerMovement : MonoBehaviour
             rigidBody.linearVelocity = new Vector3(horizontalVel.x, rigidBody.linearVelocity.y, horizontalVel.z);
         }
 
-        currSpeed = rigidBody.linearVelocity.magnitude;
+        //Debug HOTIZONTAL speed
+        currSpeed = new Vector3(rigidBody.linearVelocity.x,0,rigidBody.linearVelocity.z).magnitude;
+    }
+    private void VerticalMovement()
+    {
+        if (!isGrounded)
+        {
+            //apply gravity on the RigidBody
+            currGravity += gravity * Time.fixedDeltaTime;
+            rigidBody.AddForce(Vector3.down * currGravity,ForceMode.Force);
+
+            //clamp Y-Magnitude
+            Vector3 verticalMag = new Vector3(0, rigidBody.linearVelocity.y, 0);
+            if (verticalMag.magnitude > maxFallSpeed)
+            {
+                verticalMag = verticalMag.normalized * maxFallSpeed;
+                rigidBody.linearVelocity = new Vector3(rigidBody.linearVelocity.x, verticalMag.y, rigidBody.linearVelocity.z);
+            }
+            
+            rigidBody.linearDamping = 0.0f;
+        }
+        else
+        {
+            currGravity = 0.0f;
+        }
+
+        currFall = new Vector3(0, rigidBody.linearVelocity.y, 0).magnitude;
     }
 
     private void OnDisable()
@@ -194,6 +305,9 @@ public class PlayerMovement : MonoBehaviour
                 groundCheckOrigin.position.z);
 
             Gizmos.DrawWireSphere(origin, groundCheckSize);
+
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(groundPoint, groundCheckSize);
         }
     }
 }
