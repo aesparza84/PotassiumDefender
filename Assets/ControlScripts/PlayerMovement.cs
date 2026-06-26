@@ -16,7 +16,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Rigidbody rigidBody;
     [SerializeField] private Transform groundCheckOrigin;
-    
+    [SerializeField] private Transform orientationTransform;
+
     [Header("Ground Check")]
     [SerializeField] private float groundCheckSize = .35f;
     [SerializeField] private float groundCheckDistance = .5f;
@@ -206,7 +207,7 @@ public class PlayerMovement : MonoBehaviour
                 rigidBody.linearDamping = movementDrag;
 
             //APply camera direction
-            finalHorizontal = (transform.forward * dirInput.z) + (transform.right * dirInput.x);
+            finalHorizontal = (orientationTransform.forward * dirInput.z) + (orientationTransform.right * dirInput.x);
 
             rigidBody.AddForce(finalHorizontal.normalized * horizontalAcceleration * Time.fixedDeltaTime, ForceMode.VelocityChange);
             

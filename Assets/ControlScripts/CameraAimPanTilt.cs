@@ -4,7 +4,7 @@ using UnityEngine;
 public class CameraAimPanTilt : MonoBehaviour
 {
     [SerializeField] private Transform cameraAnchor;
-    [SerializeField] private Transform playerBody;
+    [SerializeField] private Transform orientation;
 
 
     [SerializeField] private float x_sensitivity;
@@ -26,7 +26,7 @@ public class CameraAimPanTilt : MonoBehaviour
     private void Update()
     {
         cameraAnchor.rotation = transform.rotation;
-        playerBody.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+        orientation.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
     }   
     
     private void SetCameraSensitivity(float x, float y)

@@ -33,7 +33,9 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
         isActive = false;
         projectileObject.SetActive(false);
 
-        //Destroy
+
+
+        //Destroy --TEMP
         Destroy(gameObject);
     }
     public void FillEnemy(Animal a)
