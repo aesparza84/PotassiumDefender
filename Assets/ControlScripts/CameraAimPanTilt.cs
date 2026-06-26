@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class CameraAimPanTilt : MonoBehaviour
@@ -8,50 +9,42 @@ public class CameraAimPanTilt : MonoBehaviour
 
     [SerializeField] private float x_sensitivity;
     [SerializeField] private float y_sensitivity;
+    [SerializeField] private bool invertY;
 
-
-    private float xRot;
-    private float yRot;
-    private Vector2 aimVector;
-
-
-    private PlayerControlHub inputHub;
+    private CinemachineInputAxisController cinemachineAim;
 
     private void Start()
     {
-        if (inputHub == null)
-        {
-            inputHub = gameObject.GetComponent<PlayerControlHub>();
-        }
+        cinemachineAim = GetComponent<CinemachineInputAxisController>();
 
         Cursor.lockState = CursorLockMode.Locked;
 
-        //inputHub.OnMouseAimActive += OnAimActive;
-        //inputHub.OnMouseAimStop += OnAimStop;
-    }
-
-    private void OnAimStop()
-    {
-        aimVector = Vector2.zero;
-    }
-
-    private void OnAimActive(Vector2 obj)
-    {
-        aimVector = obj;
+        //Initial set using the Editor fields
+        SetCameraSensitivity(x_sensitivity, y_sensitivity);
     }
 
     private void Update()
     {
         cameraAnchor.rotation = transform.rotation;
         playerBody.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y, 0);
+    }   
+    
+    private void SetCameraSensitivity(float x, float y)
+    {
+        foreach (var c in cinemachineAim.Controllers)
+        {
+            if (c.Name == "Look X (Pan)")
+            {
+                c.Input.Gain = x;
+            }
+            else if (c.Name == "Look Y (Tilt)")
+            {
+                if (invertY)
+                    y *= -1;
+
+                c.Input.Gain = y;
+            }
+        }
     }
 
-    //private void OnDisable()
-    //{
-    //    if (inputHub == null)
-    //        return;
-
-    //    inputHub.OnMouseAimActive -= OnAimActive;
-    //    inputHub.OnMouseAimStop -= OnAimStop;
-    //}
 }
