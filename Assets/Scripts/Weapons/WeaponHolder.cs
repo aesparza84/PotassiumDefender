@@ -17,10 +17,12 @@ public class WeaponHolder : MonoBehaviour
     /// </summary>
     [SerializeField][Range(0.1f, 1)] private float aimRayRadius;
 
-    private BaseWeapon heldWeapon;
+    [SerializeField] private BaseWeapon activeWeapon;
 
     //Debug
     private Vector3 hitPoint;
+
+    private const int aimRayMask = ~(1 << 17);
 
     private void Start()
     {
@@ -31,18 +33,33 @@ public class WeaponHolder : MonoBehaviour
     {
         PerformRayCast();
     }
+
+    /// <summary>
+    /// Active ray cast for player aim point
+    /// </summary>
     private void PerformRayCast()
     {
         hitPoint = rayOrigin.transform.position + (rayOrigin.transform.forward * maxRayDistance);
 
-        if (Physics.SphereCast(rayOrigin.position, aimRayRadius, rayOrigin.forward, out RaycastHit hit, maxRayDistance))
+        if (Physics.SphereCast(rayOrigin.position, aimRayRadius, rayOrigin.forward, out RaycastHit hit, maxRayDistance, aimRayMask))
         {
             hitPoint = hit.point;
         }
+
+        
     }
+
+    /// <summary>
+    /// Calls the Weapon-Interface Shoot() method
+    /// </summary>
     public void ShootWeapon()
     {
-
+        if (activeWeapon != null)
+        {
+            IWeapon weapon = activeWeapon.GetComponent<IWeapon>();
+            weapon.UpdateHitPoint(hitPoint);
+            weapon.Shoot();
+        }
     }
 
     private void OnDrawGizmos()

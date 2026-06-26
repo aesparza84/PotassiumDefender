@@ -1,13 +1,13 @@
 using UnityEngine;
 
-public class BaseWeapon : MonoBehaviour
+public abstract class BaseWeapon : MonoBehaviour
 {
-    protected float shotDelay;
-    [SerializeField] protected int fillAMount;
+    [SerializeField] protected float shotDelay;
+    [SerializeField] protected int fillAmount;
+    [SerializeField] protected float projectileSpeed;
+    [SerializeField] [Range(1,100)]protected float projectileMaxDistance;
+    protected float currDelay;
 
     // -- Projectile prefab
-    [SerializeField] private GameObject projectilePrefab;
-    private IProjectile projectileInterface;
-
-    
+    [SerializeField] protected GameObject projectilePrefab;
 }

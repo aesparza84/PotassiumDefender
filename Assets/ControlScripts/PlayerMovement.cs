@@ -56,8 +56,8 @@ public class PlayerMovement : MonoBehaviour
     //Events
     public event Action OnJump;
     public event Action<float> OnLand;
-    public event Action<Vector2> OnMove;
-    public event Action OnIdle;
+    //public event Action<Vector2> OnMove;
+    //public event Action OnIdle;
     
 
     private void Awake()

@@ -8,24 +8,33 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
     private float speed;
     private Vector3 direction;
 
+    private Vector3 startPos;
+    private float maxDistance;
+    private float currDistance;
 
     private bool isActive;
 
     private void Start()
     {
-        isActive = false;
+    
     }
     private void Update()
     {
         if (isActive)
         {
-            transform.position += (direction * speed * Time.deltaTime);
+            if (Vector3.Distance(startPos, transform.position) > maxDistance)
+                DisableProjectile();
+
+            transform.position += (direction.normalized * speed * Time.deltaTime);
         }
     }
     public void DisableProjectile()
     {
         isActive = false;
         projectileObject.SetActive(false);
+
+        //Destroy
+        Destroy(gameObject);
     }
     public void FillEnemy(Animal a)
     {
@@ -39,17 +48,15 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
     /// Positions and activates the projectile. Used when calling weapon.Shoot()
     /// </summary>
     /// <param name="weaponPoint"></param>
-    public void AlignAndShoot(Transform weaponPoint)
+    public void AlignAndShoot(Vector3 targetPos)
     {
         if (projectileObject != null)
             projectileObject.SetActive(true);
 
         //Align
-        gameObject.transform.position = weaponPoint.position;
-        gameObject.transform.rotation = weaponPoint.rotation;
+        direction = targetPos - transform.position;
 
-        direction = weaponPoint.forward;
-
+        startPos = transform.position;
         isActive = true;
     }
     public void SetFillAmount(int amount)
@@ -61,7 +68,7 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
         this.speed = weaponSpeed;
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
         if (CompareTag("Animal"))
         {
@@ -69,5 +76,9 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
         }
 
         DisableProjectile();
+    }
+    public void SetMaxDistance(float maxDist)
+    {
+        this.maxDistance = maxDist;
     }
 }
