@@ -2371,6 +2371,8 @@ MonoBehaviour:
   playerInputs: {fileID: 1411656524}
   swayPosLerp: 3
   swayRotLerp: 5
+  bobSpeed: 6
+  bobDistance: 0.03
   posStep: 0.03
   maxPosStep: 0.1
   rotStep: 4

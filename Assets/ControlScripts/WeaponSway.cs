@@ -7,10 +7,14 @@ public class WeaponSway : MonoBehaviour
     [SerializeField] private PlayerControlHub playerInputs;
 
     private Vector3 mouseVector;
+    private Vector3 moveVector;
     private Vector3 basePos;
 
     [SerializeField] private float swayPosLerp;
     [SerializeField] private float swayRotLerp;
+    [SerializeField] private float bobSpeed;
+    [SerializeField] private float bobDistance;
+    private float bobTimer;
 
     [Header("Sway Distance")]
     [SerializeField] private float posStep = 0.01f;
@@ -30,6 +34,24 @@ public class WeaponSway : MonoBehaviour
             return;
 
         playerInputs.OnMouseAimActive += OnAim;
+        playerInputs.OnMouseAimStop += OnAimStop;
+        playerInputs.OnMoveActive += OnMoveActive;
+        playerInputs.OnMoveStop += OnMoveStop;
+    }
+
+    private void OnMoveStop()
+    {
+        moveVector = Vector3.zero;
+    }
+
+    private void OnMoveActive(Vector2 obj)
+    {
+        moveVector = obj;
+    }
+
+    private void OnAimStop()
+    {
+        this.mouseVector = Vector2.zero;
     }
 
     private void OnAim(Vector2 obj)
@@ -39,10 +61,18 @@ public class WeaponSway : MonoBehaviour
 
     private void Update()
     {
-        SwayWeaponPos();
+        //SwayWeaponPos();
         SwayWeaponRotation();
-
         Align();
+
+        if (moveVector != Vector3.zero)
+        {
+            Bob();
+        }
+        else
+        {
+            transform.localPosition = Vector3.Lerp(transform.localPosition , basePos , 5 * Time.deltaTime);
+        }
     }
 
     private void SwayWeaponPos()
@@ -61,18 +91,33 @@ public class WeaponSway : MonoBehaviour
         swayEuler = new Vector3(invert.y, invert.x, invert.x);
     }
 
+    private void Bob()
+    {
+        if (bobTimer > float.MaxValue)
+            bobTimer = 0.0f;
+
+        bobTimer += Time.deltaTime;
+        float nextY = -Mathf.Abs(Mathf.Sin(bobTimer * bobSpeed) * bobDistance);
+        float nextX = Mathf.Cos(bobTimer * bobSpeed) * bobDistance;
+
+        transform.localPosition = new Vector3(
+            nextX,
+            nextY,
+            transform.localPosition.z);
+    }
+
+
     private void Align()
     {
-        transform.localPosition = Vector3.Lerp(
-            transform.localPosition,
-            basePos + (swayPos),
-            swayPosLerp*Time.deltaTime);
+        //transform.localPosition = Vector3.Lerp(
+        //    transform.localPosition,
+        //    basePos + (swayPos) + bobPos,
+        //    swayPosLerp*Time.deltaTime);
         
         transform.localRotation = Quaternion.Slerp(
             transform.localRotation, 
-            Quaternion.Euler(swayEuler),
+            Quaternion.Euler(swayEuler) ,
             swayRotLerp * Time.deltaTime);
-        
     }
 
     private void OnDisable()
@@ -81,5 +126,9 @@ public class WeaponSway : MonoBehaviour
             return;
 
         playerInputs.OnMouseAimActive -= OnAim;
+        playerInputs.OnMouseAimStop -= OnAimStop;
+
+        playerInputs.OnMoveActive += OnMoveActive;
+        playerInputs.OnMoveStop += OnMoveStop;
     }
 }
