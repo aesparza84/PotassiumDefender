@@ -2369,6 +2369,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponSway
   playerInputs: {fileID: 1411656524}
+  playerMovement: {fileID: 1411656523}
+  rb: {fileID: 1411656526}
+  threshold: 3
+  maxDist: 0.04
   swayPosLerp: 3
   swayRotLerp: 5
   bobSpeed: 6

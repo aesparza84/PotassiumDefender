@@ -5,11 +5,18 @@ public class WeaponSway : MonoBehaviour
 {
     [Header("External")]
     [SerializeField] private PlayerControlHub playerInputs;
+    [SerializeField] private PlayerMovement playerMovement;
+    [SerializeField] private Rigidbody rb;
 
     private Vector3 mouseVector;
     private Vector3 moveVector;
     private Vector3 basePos;
 
+    [Header("Landing Values")]
+    [SerializeField] private float threshold = 3;
+    [SerializeField] private float maxDist = 0.04f;
+
+    [Header("Bob Sway Speeds")]
     [SerializeField] private float swayPosLerp;
     [SerializeField] private float swayRotLerp;
     [SerializeField] private float bobSpeed;
@@ -30,13 +37,23 @@ public class WeaponSway : MonoBehaviour
     {
         basePos = transform.localPosition;
 
-        if (playerInputs == null)
-            return;
+        if (playerInputs != null)
+        {
+            playerInputs.OnMouseAimActive += OnAim;
+            playerInputs.OnMouseAimStop += OnAimStop;
+            playerInputs.OnMoveActive += OnMoveActive;
+            playerInputs.OnMoveStop += OnMoveStop;
+        }
 
-        playerInputs.OnMouseAimActive += OnAim;
-        playerInputs.OnMouseAimStop += OnAimStop;
-        playerInputs.OnMoveActive += OnMoveActive;
-        playerInputs.OnMoveStop += OnMoveStop;
+        if (playerMovement)
+        {
+            playerMovement.OnLand += PlayerMovement_OnLand;
+        }
+    }
+
+    private void PlayerMovement_OnLand(float obj)
+    {
+        LandImpact();
     }
 
     private void OnMoveStop()
@@ -63,7 +80,7 @@ public class WeaponSway : MonoBehaviour
     {
         //SwayWeaponPos();
         SwayWeaponRotation();
-        Align();
+        SetSwayRotation();
 
         if (moveVector != Vector3.zero)
         {
@@ -107,28 +124,35 @@ public class WeaponSway : MonoBehaviour
     }
 
 
-    private void Align()
-    {
-        //transform.localPosition = Vector3.Lerp(
-        //    transform.localPosition,
-        //    basePos + (swayPos) + bobPos,
-        //    swayPosLerp*Time.deltaTime);
-        
+    private void SetSwayRotation()
+    {        
         transform.localRotation = Quaternion.Slerp(
             transform.localRotation, 
             Quaternion.Euler(swayEuler) ,
             swayRotLerp * Time.deltaTime);
     }
 
+    private void LandImpact()
+    {
+        float impulse = Mathf.Lerp(transform.localPosition.y, maxDist, Mathf.Abs(rb.linearVelocity.y) / threshold);
+
+        transform.localPosition -= new Vector3(0, impulse, 0);
+    }
+
     private void OnDisable()
     {
-        if (playerInputs == null)
-            return;
+        if (playerInputs != null)
+        {
+            playerInputs.OnMouseAimActive -= OnAim;
+            playerInputs.OnMouseAimStop -= OnAimStop;
 
-        playerInputs.OnMouseAimActive -= OnAim;
-        playerInputs.OnMouseAimStop -= OnAimStop;
+            playerInputs.OnMoveActive += OnMoveActive;
+            playerInputs.OnMoveStop += OnMoveStop;
+        }
 
-        playerInputs.OnMoveActive += OnMoveActive;
-        playerInputs.OnMoveStop += OnMoveStop;
+        if (playerMovement != null)
+        {
+            playerMovement.OnLand -= PlayerMovement_OnLand;
+        }
     }
 }
