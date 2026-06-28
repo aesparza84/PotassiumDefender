@@ -316,9 +316,29 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 173683645019617838, guid: ac6e0c0d2d0e9da4d88ec592cdbde55d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: ac6e0c0d2d0e9da4d88ec592cdbde55d, type: 3}
       propertyPath: m_Name
       value: Pig
+      objectReference: {fileID: 0}
+    - target: {fileID: 1096160798044631874, guid: ac6e0c0d2d0e9da4d88ec592cdbde55d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7554733760903675833, guid: ac6e0c0d2d0e9da4d88ec592cdbde55d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8016436640509150942, guid: ac6e0c0d2d0e9da4d88ec592cdbde55d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8845816562752519761, guid: ac6e0c0d2d0e9da4d88ec592cdbde55d, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
