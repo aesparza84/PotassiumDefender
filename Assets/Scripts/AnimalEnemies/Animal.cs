@@ -16,56 +16,175 @@ public abstract class Animal : MonoBehaviour
     
     public int AnimalHunger { get; /*{ return animalHunger; }*/ set; /*{ animalHunger = value; }*/ }
 
-    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-    [SerializeField] private float movementSpeed;
-    public float MovementSpeed { get { return movementSpeed; } set { movementSpeed = value; } }
-
+    [SerializeField] protected float feedDelay;
+    protected float currFeedDelay;
 
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-    [SerializeField] private Transform endGoal;
-    public Transform EndGoal { get { return endGoal; } set { endGoal = value; } }
+    [SerializeField] protected float approachMovementSpeed;
+    public float ApproachMovementSpeed { get { return approachMovementSpeed; } set { approachMovementSpeed = value; } }
+
+    [SerializeField] protected float scurryMovementSpeed;
+    public float ScurryMovementSpeed { get { return scurryMovementSpeed; } set { scurryMovementSpeed = value; } }
+
+
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+    [SerializeField] private Transform foodSupplyTransform;
+    public Transform FoodSupplyTransform { get { return foodSupplyTransform; } set { foodSupplyTransform = value; } }
+    protected Vector3 goalPos;
+    protected Vector3 scurryPos; //Debug Vector
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
     public Rigidbody rig { get; set; }
     public NavMeshAgent agent;
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-    public virtual void TravelToGoal()
+    //External
+    protected FoodSupply foodSupplyReference; //This will get referenced on collision. De referenced when Scurry
+
+    protected AnimalState currState;
+    protected virtual void TravelToGoal()
     {
-        agent.SetDestination(EndGoal.position);
+        //Provide a Vector3
+        agent.SetDestination(goalPos);
+    }
+    protected void SetAgentSpeed(float speed)
+    {
+        agent.speed = speed;
+    }
+    protected void SetTargetViaTransform(Transform targetTransform)
+    {
+        this.FoodSupplyTransform = targetTransform;
+
+        if (targetTransform == null)
+        {
+            this.goalPos = transform.position;
+        }
+        else
+        {
+            this.goalPos = this.FoodSupplyTransform.position;
+        }
+    }
+    protected void SetTargetViaPosition(Vector3 pos)
+    {
+        this.goalPos = pos;
     }
 
-    public void DecreaseHunger()
+    public void FillHunger()
     {
-        if (AnimalHunger > 0)
+        Debug.Log($"{gameObject.name} - Bite");
+        AnimalHunger++;
+
+        if (AnimalHunger >= animalHungerMax)
         {
-            --AnimalHunger;
+            SwitchState(AnimalState.SCURRYING);
         }
-            
-        if(AnimalHunger == 0)
+    }
+    protected virtual void SwitchState(AnimalState state)
+    {
+        this.currState = state;
+
+        switch (currState)
         {
-            gameObject.SetActive(false);
+            case AnimalState.APPROACHING:
+                SetAgentSpeed(approachMovementSpeed);
+                SetTargetViaTransform(FoodSupplyTransform);
+                TravelToGoal();
+
+                break;
+            case AnimalState.EATING:
+                SetTargetViaTransform(null); //Full stop at position
+                SetTargetViaPosition(transform.position);
+                SetAgentSpeed(0);
+                                
+                break;
+            case AnimalState.SCURRYING:
+                //somehwere behind animal
+                SetAgentSpeed(ScurryMovementSpeed);
+                Vector3 pos = CalculateScurryPos();
+                scurryPos = pos;
+                SetTargetViaPosition(pos);
+                TravelToGoal();
+
+                break;
+            case AnimalState.IDLE:
+                //Stay still, do nothing
+                SetAgentSpeed(0);
+                SetTargetViaPosition(transform.position); //Full stop at position
+
+                break;
+            default:
+                break;
         }
-        
+    }
+    protected virtual Vector3 CalculateScurryPos()
+    {
+        Vector3 dir = -transform.forward;
+        Quaternion rot = Quaternion.AngleAxis(Random.Range(-45,45),transform.up);
+        Vector3 f = rot * dir;
+        return transform.position + f.normalized * 20;
     }
 
-    private void SetHunger()
+    //Initialization
+    protected void SetHunger()
     {
         AnimalHunger = AnimalHungerMax;
     }
-
-    private void SetSpeed()
-    {
-        agent.speed = MovementSpeed;
-    }
-
     public void SetInfoAtStart()
     {
         rig = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
 
-        SetHunger();
-        SetSpeed();
+        SetAgentSpeed(ApproachMovementSpeed);
+        SetTargetViaTransform(FoodSupplyTransform);
+    }
 
+    protected virtual void Update()
+    {
+        switch (currState)
+        {
+            case AnimalState.APPROACHING:
+     
+                break;
+            case AnimalState.EATING:
+                if (currFeedDelay > 0.0f)
+                {
+                    currFeedDelay -= Time.deltaTime;
+                }
+                else
+                {
+                    currFeedDelay = feedDelay;
+                    FillHunger();
+                    if (foodSupplyReference != null)
+                    {
+                        foodSupplyReference.ReduceAmount();
+                    }
+                }
+
+
+                break;
+            case AnimalState.SCURRYING:
+                break;
+            case AnimalState.IDLE:
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Finish"))
+        {
+            if (currState == AnimalState.SCURRYING)
+                return;
+
+            if (collision.gameObject.TryGetComponent<FoodSupply>(out FoodSupply f))
+            {
+                this.foodSupplyReference = f;
+                SwitchState(AnimalState.EATING);
+            }
+        }
     }
 }
