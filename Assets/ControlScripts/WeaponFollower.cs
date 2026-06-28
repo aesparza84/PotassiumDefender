@@ -6,10 +6,8 @@ public class WeaponFollower : MonoBehaviour
 
     private void Update()
     {
-        if (targetTransform != null)
-        {
-            transform.position = targetTransform.position;
-            transform.rotation = targetTransform.rotation;
-        }
+        transform.position = targetTransform.position;
+        transform.rotation = targetTransform.rotation;
     }
+
 }

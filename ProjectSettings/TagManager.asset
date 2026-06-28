@@ -15,6 +15,7 @@ TagManager:
   - 
   - 
   - 
+  - Player
   - 
   - 
   - 
@@ -22,8 +23,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
+  - Projectile
   - 
   - 
   - 

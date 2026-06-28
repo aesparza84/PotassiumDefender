@@ -8,10 +8,15 @@ public class Mice : Animal
         AnimalHungerMax = AnimalHungerMax == 0 ? 1 : AnimalHungerMax;
 
         SetInfoAtStart();
+        SwitchState(AnimalState.APPROACHING);
     }
-
-    private void FixedUpdate()
+    protected override void Update()
     {
-        TravelToGoal();
+        base.Update();
+
+        if (scurryPos != Vector3.zero)
+        {
+            Debug.DrawLine(transform.position, scurryPos, Color.red);
+        }
     }
 }

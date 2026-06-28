@@ -16,7 +16,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Components")]
     [SerializeField] private Rigidbody rigidBody;
     [SerializeField] private Transform groundCheckOrigin;
-    
+    [SerializeField] private Transform orientationTransform;
+
     [Header("Ground Check")]
     [SerializeField] private float groundCheckSize = .35f;
     [SerializeField] private float groundCheckDistance = .5f;
@@ -56,8 +57,8 @@ public class PlayerMovement : MonoBehaviour
     //Events
     public event Action OnJump;
     public event Action<float> OnLand;
-    public event Action<Vector2> OnMove;
-    public event Action OnIdle;
+    //public event Action<Vector2> OnMove;
+    //public event Action OnIdle;
     
 
     private void Awake()
@@ -160,36 +161,6 @@ public class PlayerMovement : MonoBehaviour
         groundCheckTimer = groundCheckDisableTimer;
         rigidBody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
     }
-
-    private void GravityGroundCheck()
-    {
-        Vector3 origin = new Vector3(groundCheckOrigin.position.x,
-                groundCheckOrigin.position.y - groundCheckDistance,
-                groundCheckOrigin.position.z);
-
-        if (Physics.SphereCast(origin, groundCheckSize, Vector3.down, out RaycastHit hit, 1) 
-            && Vector3.Angle(hit.normal,Vector3.up) < 60)
-        {
-            isGrounded = true;
-
-            currGravity = 0.0f;
-            Vector3 targetPos = rigidBody.position;
-            targetPos.y = hit.point.y;
-
-            rigidBody.position = Vector3.Lerp(rigidBody.position, targetPos, Time.fixedDeltaTime * 5);
-        }
-        else
-        {
-            isGrounded = false;
-
-            currGravity -= gravity * Time.deltaTime;
-            if (currGravity > maxFallSpeed)
-                currGravity = maxFallSpeed;
-
-            Vector3 vertical = new Vector3(0,currGravity,0);
-            rigidBody.AddForce(vertical, ForceMode.VelocityChange);
-        }
-    }
     private void GroundCheck()
     {
         if (groundCheckOrigin == null)
@@ -211,19 +182,15 @@ public class PlayerMovement : MonoBehaviour
                 Debug.Log($"Land Vel - {rigidBody.linearVelocity.y}");
             }
 
-            //Set Rigidbody to ground
-            if (isGrounded)
-            {
-                groundPoint = hit.point;
+            groundPoint = hit.point;
 
-                Vector3 targetPos = rigidBody.position;
-                targetPos.y = hit.point.y;
-                rigidBody.position = Vector3.Lerp(rigidBody.position, targetPos, Time.fixedDeltaTime * 5);
-            }
+            Vector3 targetPos = rigidBody.position;
+            targetPos.y = hit.point.y;
+            rigidBody.position = Vector3.Lerp(rigidBody.position, targetPos, Time.fixedDeltaTime * 5);
         }
         else
         {
-            //Initial set to 'Grounded'
+            //Initial set to 'un-Grounded'
             if (isGrounded)
             {
                 isGrounded = false;
@@ -240,7 +207,7 @@ public class PlayerMovement : MonoBehaviour
                 rigidBody.linearDamping = movementDrag;
 
             //APply camera direction
-            finalHorizontal = (transform.forward * dirInput.z) + (transform.right * dirInput.x);
+            finalHorizontal = (orientationTransform.forward * dirInput.z) + (orientationTransform.right * dirInput.x);
 
             rigidBody.AddForce(finalHorizontal.normalized * horizontalAcceleration * Time.fixedDeltaTime, ForceMode.VelocityChange);
             
