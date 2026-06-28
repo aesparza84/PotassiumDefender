@@ -12,20 +12,26 @@ public class FoodSupply : MonoBehaviour
     }
 
 
-    private void OnCollisionEnter(Collision collision)
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if (collision.gameObject.CompareTag("Animal"))
+    //    {
+    //        supplyAmount -= collision.gameObject.GetComponent<Animal>().AnimalHunger;
+
+    //        if (supplyAmount <= 0) 
+    //        {
+    //            DeactivateSupply();
+    //        }
+    //    }
+    //}
+    
+    public void ReduceAmount()
     {
-        if (collision.gameObject.CompareTag("Animal"))
-        {
-            supplyAmount -= collision.gameObject.GetComponent<Animal>().AnimalHunger;
-            collision.gameObject.SetActive(false);
+        this.supplyAmount -= 1;
 
-            if (supplyAmount <= 0) 
-            {
-                DeactivateSupply();
-            }
-        }
+        if (this.supplyAmount <= 0)
+            DeactivateSupply();
     }
-
     private void DeactivateSupply()
     {
         gameObject.SetActive(false);
