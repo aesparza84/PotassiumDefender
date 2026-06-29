@@ -10,10 +10,12 @@ public class MainMenu : MonoBehaviour
         switch (menu) 
         {
             case "GameplayMenu":
+            case "PlayerCamera":
                 UpdateCamera?.Invoke(menuType.GameplayMenu);
             break;
             
             case "MainMenu":
+            case "MenuCamera":
                 UpdateCamera?.Invoke(menuType.MainMenu);
             break;
 
@@ -28,13 +30,15 @@ public class MainMenu : MonoBehaviour
             case "SettingsMenu":
                 UpdateCamera?.Invoke(menuType.SettingsMenu);
             break;
+            
+            case "TransitionMenu":
+                UpdateCamera?.Invoke(menuType.TransitionMenu);
+            break;
 
-
+            case "RestartMenu":
+                UpdateCamera?.Invoke(menuType.RestartMenu);
+                break;
         }
-
     }
-
-    
-    
 }
 
