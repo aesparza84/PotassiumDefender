@@ -40,6 +40,13 @@ public abstract class Animal : MonoBehaviour
     public NavMeshAgent agent;
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+    /// <summary>
+    /// Event when animal fills hunger
+    /// </summary>
+    public event System.Action OnFilled;
+
+    /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
     //External
     protected FoodSupply foodSupplyReference; //This will get referenced on collision. De referenced when Scurry
 
@@ -78,6 +85,7 @@ public abstract class Animal : MonoBehaviour
 
         if (AnimalHunger >= animalHungerMax)
         {
+            OnFilled?.Invoke();
             SwitchState(AnimalState.SCURRYING);
         }
     }
@@ -131,13 +139,22 @@ public abstract class Animal : MonoBehaviour
     {
         AnimalHunger = AnimalHungerMax;
     }
-    public void SetInfoAtStart()
-    {
-        rig = GetComponent<Rigidbody>();
-        agent = GetComponent<NavMeshAgent>();
 
-        SetAgentSpeed(ApproachMovementSpeed);
-        SetTargetViaTransform(FoodSupplyTransform);
+    public void SetSupplyTransform(Transform transform)
+    {
+        this.FoodSupplyTransform = transform;
+    }
+    public void SetDefaults()
+    {
+        if (rig == null)
+            rig = GetComponent<Rigidbody>();
+        
+        if(agent == null)
+            agent = GetComponent<NavMeshAgent>();
+
+        AnimalHunger = 0;
+
+        SwitchState(AnimalState.APPROACHING);
     }
 
     protected virtual void Update()

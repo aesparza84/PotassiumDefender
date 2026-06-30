@@ -72,9 +72,14 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
 
     private void OnTriggerEnter(Collider other)
     {
-        if (CompareTag("Animal"))
+        if (other.gameObject.CompareTag("Animal"))
         {
             Debug.Log("Animal Hit");
+
+            if (other.gameObject.TryGetComponent<Animal>(out Animal a))
+            {
+                a.FillHunger();
+            }
         }
 
         DisableProjectile();

@@ -4,12 +4,10 @@ public class Pig : Animal
 {
     
     void Start()
-    {
-       
+    {       
         AnimalHungerMax = AnimalHungerMax == 0 ? 3 : AnimalHungerMax;
 
-        SetInfoAtStart();
-        SwitchState(AnimalState.APPROACHING);
+        SetDefaults();
     }
 
     protected override void Update()

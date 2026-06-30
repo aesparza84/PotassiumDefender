@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Bat : Animal
 {
@@ -11,12 +12,11 @@ public class Bat : Animal
     {        
         AnimalHungerMax = AnimalHungerMax == 0 ? 2 : AnimalHungerMax;
 
-        SetInfoAtStart(); //Initialization
-
         rig.useGravity = false;
         startHeight = transform.position.y;
-    }
 
+        SetDefaults(); //Initialization
+    }
     protected override void TravelToGoal()
     {
         //transform.LookAt(new Vector3(FoodSupplyTransform.position.x, transform.position.y, FoodSupplyTransform.position.z), Vector3.up);
