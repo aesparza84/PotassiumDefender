@@ -78,7 +78,7 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
 
             if (other.gameObject.TryGetComponent<Animal>(out Animal a))
             {
-                a.FillHunger();
+                a.FillHunger(true);
             }
         }
 

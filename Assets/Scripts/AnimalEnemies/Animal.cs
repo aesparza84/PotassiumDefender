@@ -5,7 +5,9 @@ public abstract class Animal : MonoBehaviour
 {
     [SerializeField] private string animalName;
     public string AnimalName { get { return animalName; } set { animalName = value; } }
-    
+
+    protected AnimalType animalType;
+
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
     
     [SerializeField] private int animalPointAmount;
@@ -45,6 +47,14 @@ public abstract class Animal : MonoBehaviour
     /// </summary>
     public event System.Action<Animal> OnFilled;
 
+    public static event System.Action<AnimalType> OnFilledFromPlayer;
+
+    /// <summary>
+    /// Event when this gameobject will be disabled
+    /// </summary>
+    public event System.Action<GameObject, Animal> OnAnimalDisable;
+
+
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
     //External
@@ -78,14 +88,20 @@ public abstract class Animal : MonoBehaviour
         this.goalPos = pos;
     }
 
-    public virtual void FillHunger()
+    public virtual void FillHunger(bool fromPlayer)
     {
+        if (currState == AnimalState.SCURRYING)
+            return;
+
         Debug.Log($"{gameObject.name} - Bite");
         AnimalHunger++;
 
         if (AnimalHunger >= animalHungerMax)
         {
             SwitchState(AnimalState.SCURRYING);
+
+            if (fromPlayer)
+                OnFilledFromPlayer?.Invoke(this.animalType); //Only fires when player has last hit animal
         }
     }
     protected virtual void SwitchState(AnimalState state)
@@ -114,6 +130,9 @@ public abstract class Animal : MonoBehaviour
                 SetTargetViaPosition(pos);
                 TravelToGoal();
 
+                //Disable when scurry
+                Invoke("DisableAnimal", 3.0f);
+
                 break;
             case AnimalState.IDLE:
                 //Stay still, do nothing
@@ -131,6 +150,16 @@ public abstract class Animal : MonoBehaviour
         Quaternion rot = Quaternion.AngleAxis(Random.Range(-45,45),transform.up);
         Vector3 f = rot * dir;
         return transform.position + f.normalized * 20;
+    }
+
+    protected void DisableAnimal()
+    {
+        SwitchState(AnimalState.IDLE);
+
+        //Fire event for POOLING
+        OnAnimalDisable?.Invoke(gameObject, this);
+        
+        gameObject.SetActive(false);
     }
 
     //Initialization
@@ -152,7 +181,7 @@ public abstract class Animal : MonoBehaviour
             agent = GetComponent<NavMeshAgent>();
 
         AnimalHunger = 0;
-
+        currFeedDelay = 0;
         SwitchState(AnimalState.APPROACHING);
     }
 
@@ -176,7 +205,7 @@ public abstract class Animal : MonoBehaviour
                 else
                 {
                     currFeedDelay = feedDelay;
-                    FillHunger();
+                    FillHunger(false);
                     if (foodSupplyReference != null)
                     {
                         foodSupplyReference.ReduceAmount();

@@ -6,12 +6,13 @@ public class Mice : Animal
     {        
         AnimalHungerMax = AnimalHungerMax == 0 ? 1 : AnimalHungerMax;
 
+        this.animalType = AnimalType.MICE;
         SetDefaults();
     }
 
-    public override void FillHunger()
+    public override void FillHunger(bool fromPlayer)
     {
-        base.FillHunger();
+        base.FillHunger(fromPlayer);
         RaiseFilledEvent();
     }
     protected override void Update()

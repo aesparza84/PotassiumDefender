@@ -62,9 +62,9 @@ public class CustomBorder : MonoBehaviour
         Vector3 prev = points[0].position;
         for (int i = 0; i < points.Length; i++)
         {
-            Gizmos.color = Color.orange;
+            Gizmos.color = Color.red;
             Gizmos.DrawWireSphere(points[i].position, .3f);
-            Gizmos.color = Color.green;
+            Gizmos.color = Color.black;
 
             if (i == 0)
                 continue;

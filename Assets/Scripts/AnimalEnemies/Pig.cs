@@ -7,11 +7,12 @@ public class Pig : Animal
     {       
         AnimalHungerMax = AnimalHungerMax == 0 ? 3 : AnimalHungerMax;
 
+        this.animalType = AnimalType.PIG;
         SetDefaults();
     }
-    public override void FillHunger()
+    public override void FillHunger(bool fromPlayer)
     {
-        base.FillHunger();
+        base.FillHunger(fromPlayer);
         RaiseFilledEvent();
     }
     protected override void Update()

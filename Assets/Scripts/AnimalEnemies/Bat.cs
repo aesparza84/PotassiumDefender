@@ -10,16 +10,18 @@ public class Bat : Animal
     private float startHeight;
     void Start()
     {        
+        SetDefaults(); //Initialization
+
         AnimalHungerMax = AnimalHungerMax == 0 ? 2 : AnimalHungerMax;
 
         rig.useGravity = false;
         startHeight = transform.position.y;
 
-        SetDefaults(); //Initialization
+        this.animalType = AnimalType.BAT;
     }
-    public override void FillHunger()
+    public override void FillHunger(bool fromPlayer)
     {
-        base.FillHunger();
+        base.FillHunger(fromPlayer);
         RaiseFilledEvent();
     }
     protected override void TravelToGoal()
@@ -36,6 +38,13 @@ public class Bat : Animal
         if (currState == AnimalState.APPROACHING || currState == AnimalState.SCURRYING)
         {
             TravelToGoal();
+
+            //if (currState == AnimalState.SCURRYING && transform.position.y != scurryPos.y)
+            //{
+            //    Vector3 nextPos = new Vector3(0, scurryPos.y, 0) + transform.position;
+            //    rig.position = Vector3.MoveTowards(transform.position,
+            //        nextPos, scurryMovementSpeed * Time.fixedDeltaTime);
+            //}
         }
     }
 
@@ -76,6 +85,9 @@ public class Bat : Animal
                 SetTargetViaPosition(pos);
                 
                 TravelToGoal();
+
+                //Disable when scurry
+                Invoke("DisableAnimal", 3.0f);
                 break;
             case AnimalState.IDLE:
                 //Stay still, do nothing
