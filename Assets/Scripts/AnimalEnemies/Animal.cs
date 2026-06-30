@@ -180,11 +180,17 @@ public abstract class Animal : MonoBehaviour
         if(agent == null)
             agent = GetComponent<NavMeshAgent>();
 
+        //GLOBAL Game over trigger
+        GameOverTrigger.OnGameOver += OnGameOverState;
+
         AnimalHunger = 0;
         currFeedDelay = 0;
         SwitchState(AnimalState.APPROACHING);
     }
-
+    protected void OnGameOverState(float time)
+    {
+        SwitchState(AnimalState.IDLE);
+    }
     protected virtual void RaiseFilledEvent()
     {
         OnFilled?.Invoke(this);
@@ -223,6 +229,8 @@ public abstract class Animal : MonoBehaviour
         }
     }
 
+    
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Finish"))
@@ -236,5 +244,10 @@ public abstract class Animal : MonoBehaviour
                 SwitchState(AnimalState.EATING);
             }
         }
+    }
+
+    protected void OnDisable()
+    {
+        GameOverTrigger.OnGameOver -= OnGameOverState;
     }
 }

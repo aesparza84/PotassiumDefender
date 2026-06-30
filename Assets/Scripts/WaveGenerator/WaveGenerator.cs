@@ -141,6 +141,8 @@ public class WaveGenerator : MonoBehaviour
                 waveSpecificWeight = 0;
                 break;
 
+            case WaveState.IDLE:
+                break;
             default:
                 break;
         }
@@ -177,6 +179,8 @@ public class WaveGenerator : MonoBehaviour
                     currDifficulty = difficulties[difficultyIndex];
                 
                 waveCount++;
+                break;
+            case WaveState.IDLE:
                 break;
             default:
                 break;
