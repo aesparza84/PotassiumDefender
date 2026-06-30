@@ -43,7 +43,7 @@ public abstract class Animal : MonoBehaviour
     /// <summary>
     /// Event when animal fills hunger
     /// </summary>
-    public event System.Action OnFilled;
+    public event System.Action<Animal> OnFilled;
 
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
@@ -78,14 +78,13 @@ public abstract class Animal : MonoBehaviour
         this.goalPos = pos;
     }
 
-    public void FillHunger()
+    public virtual void FillHunger()
     {
         Debug.Log($"{gameObject.name} - Bite");
         AnimalHunger++;
 
         if (AnimalHunger >= animalHungerMax)
         {
-            OnFilled?.Invoke();
             SwitchState(AnimalState.SCURRYING);
         }
     }
@@ -155,6 +154,11 @@ public abstract class Animal : MonoBehaviour
         AnimalHunger = 0;
 
         SwitchState(AnimalState.APPROACHING);
+    }
+
+    protected virtual void RaiseFilledEvent()
+    {
+        OnFilled?.Invoke(this);
     }
 
     protected virtual void Update()

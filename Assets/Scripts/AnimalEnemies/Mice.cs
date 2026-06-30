@@ -8,6 +8,12 @@ public class Mice : Animal
 
         SetDefaults();
     }
+
+    public override void FillHunger()
+    {
+        base.FillHunger();
+        RaiseFilledEvent();
+    }
     protected override void Update()
     {
         base.Update();

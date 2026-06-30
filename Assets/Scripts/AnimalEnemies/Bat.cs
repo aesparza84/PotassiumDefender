@@ -17,6 +17,11 @@ public class Bat : Animal
 
         SetDefaults(); //Initialization
     }
+    public override void FillHunger()
+    {
+        base.FillHunger();
+        RaiseFilledEvent();
+    }
     protected override void TravelToGoal()
     {
         //transform.LookAt(new Vector3(FoodSupplyTransform.position.x, transform.position.y, FoodSupplyTransform.position.z), Vector3.up);

@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class WaveGenerator : MonoBehaviour
 {
@@ -11,7 +13,17 @@ public class WaveGenerator : MonoBehaviour
     /// <summary>
     /// Currently active animals
     /// </summary>
-    private int amount;
+    private int currWeight;
+
+    /// <summary>
+    /// Weight for current wave
+    /// </summary>
+    private int expectedWeight;
+
+    /// <summary>
+    /// Weights added on new wave. When reaches expectedWeight, stop spawning
+    /// </summary>
+    private int waveSpecificWeight;
 
     /// <summary>
     /// Delay between spawning/enabling animals in wave
@@ -22,12 +34,16 @@ public class WaveGenerator : MonoBehaviour
     /// <summary>
     /// Multiplier applied to baseAmount each wave iteration
     /// </summary>
-    private float multiplier;
+    [SerializeField] private float multiplier = 1.5f;
 
     /// <summary>
     /// Starting spawn count to multiply each wave
     /// </summary>
     [SerializeField] private int baseWeightLimit; //base weight - wave 1
+
+    [Header("Wave Difficulty")]
+    [SerializeField] private WaveDifficulty[] difficulties;
+    private WaveDifficulty currDifficulty;
 
     [Header("Animal Prefabs")]
     [SerializeField] private GameObject PigPrefab;
@@ -66,55 +82,119 @@ public class WaveGenerator : MonoBehaviour
         weightMap.Add(typeof(Mice), mouseWeight);
 
         currDelay = 0.0f;
+
+        currDifficulty = difficulties[difficulties.Length-1];
+
+        SwitchToState(WaveState.GENERATING);
     }
 
-    private void spawnMouse() //Pre-checked weight
+    private void Update()
+    {
+        switch (waveState)
+        {
+            case WaveState.GENERATING:
+                if (currDelay > 0.0f)
+                {
+                    currDelay -= Time.deltaTime;
+                }
+                else
+                {
+                    currDelay = delay;
+                    spawnAnimal();
+                }
+                
+                if (waveSpecificWeight >= expectedWeight)
+                    SwitchToState(WaveState.ACTIVE);
+                
+                break;
+            case WaveState.ACTIVE:
+
+                if (currWeight == 0)
+                    SwitchToState(WaveState.GENERATING);
+
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void SwitchToState(WaveState state)
+    {
+        this.waveState = state;
+
+        switch (state)
+        {
+            case WaveState.GENERATING:
+                //expectedWeight = Mathf.RoundToInt(expectedWeight * multiplier);
+                expectedWeight = baseWeightLimit;
+                currDelay = delay;
+
+                break;
+            
+            case WaveState.ACTIVE:
+
+                
+                break;
+            default:
+                break;
+        }
+    }
+
+    private Animal spawnAnimal()
     {
         Vector3 spawnPos = chooseSpawnPos();
         Vector3 dirToSupply = FoodSupplyTransform.position - spawnPos;
         Quaternion lookRot = Quaternion.LookRotation(dirToSupply.normalized);
 
-        GameObject mouse = getMouse();
-        Animal a = mouse.GetComponent<Animal>();
+        GameObject animalObj;
+        Animal animal;
 
-        //Reposition & Rotate
-        mouse.transform.position = spawnPos;
-        mouse.transform.rotation = lookRot;
+        /*
+        int rand = Random.Range(0, 3);
+        switch (rand)
+        {
+            case 0:
+                animalObj = getMouse();
+                break;
+            case 1:
+                float height = Random.Range(4.0f, 6.0f);
+                spawnPos.y = height;
 
-        mouse.SetActive(true);
-        a.SetDefaults();
+                animalObj = getBat();
+                break;
+            case 2:
+                animalObj = getMouse();
+                break;
+            default:
+                animalObj = getMouse();
+                break;
+        }
+        */
+        animalObj = getMouse();
+        animal = animalObj.GetComponent<Animal>();
+
+
+        int w = weightMap[animal.GetType()];
+        waveSpecificWeight += w;
+
+
+        animalObj.transform.position = spawnPos;
+        animalObj.transform.rotation = lookRot;
+
+        animalObj.SetActive(true);
+        animal.SetSupplyTransform(FoodSupplyTransform);
+        animal.SetDefaults();
+
+        animal.OnFilled += Animal_OnFilled;
+        return animal;
     }
-    private void spawnBat() //Pre-checked weight
+
+    private void Animal_OnFilled(Animal animInst)
     {
-        Vector3 spawnPos = chooseSpawnPos();
-        Vector3 dirToSupply = FoodSupplyTransform.position - spawnPos;
-        Quaternion lookRot = Quaternion.LookRotation(dirToSupply.normalized);
+        //Debug.Log($"type - {animType}");
 
-        GameObject bat = getMouse();
-        Animal a = bat.GetComponent<Animal>();
-
-        //Reposition & Rotate
-        bat.transform.position = spawnPos;
-        bat.transform.rotation = lookRot;
-
-        bat.SetActive(true);
-        a.SetDefaults();
-    }
-    private void spawnPig() //Pre-checked weight
-    {
-        Vector3 spawnPos = chooseSpawnPos();
-        Vector3 dirToSupply = FoodSupplyTransform.position - spawnPos;
-        Quaternion lookRot = Quaternion.LookRotation(dirToSupply.normalized);
-
-        GameObject pig = getMouse();
-        Animal a = pig.GetComponent<Animal>();
-
-        //Reposition & Rotate
-        pig.transform.position = spawnPos;
-        pig.transform.rotation = lookRot;
-
-        pig.SetActive(true);
-        a.SetDefaults();
+        currWeight -= weightMap[animInst.GetType()];
+        animInst.OnFilled -= Animal_OnFilled;
     }
 
     private GameObject getMouse()
