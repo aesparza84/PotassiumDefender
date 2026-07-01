@@ -11,6 +11,11 @@ public class FoodSupply : MonoBehaviour
     /// </summary>
     public static event Action OnSupplyDestroyed;
 
+    /// <summary>
+    /// Event fired when losing health
+    /// </summary>
+    public event Action<float> OnSupplyHit;
+
     void Start()
     {
         currSupplyCount = supplyAmount;
@@ -22,6 +27,9 @@ public class FoodSupply : MonoBehaviour
 
         if (this.currSupplyCount <= 0)
             DeactivateSupply();
+
+        float hp = (float)currSupplyCount / (float)supplyAmount;
+        OnSupplyHit?.Invoke(hp);
     }
     private void DeactivateSupply()
     {
