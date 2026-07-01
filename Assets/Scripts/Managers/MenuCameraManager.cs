@@ -15,6 +15,9 @@ public class MenuCameraManager : MonoBehaviour
     [SerializeField]
     private bool didPlayerLose; //Temp
 
+    [SerializeField]
+    private ScoreTracker tracker; //temp placement
+
     void Awake()
     {
         UpdateCurrentCamera(menuType.MainMenu);
@@ -24,6 +27,7 @@ public class MenuCameraManager : MonoBehaviour
     {
         if (didPlayerLose)
         {
+            tracker.CalculateTotalResult();
             UpdateCurrentCamera(menuType.RestartMenu);
         }
         
