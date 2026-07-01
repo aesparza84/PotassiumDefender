@@ -4,14 +4,17 @@ public class Pig : Animal
 {
     
     void Start()
-    {
-       
+    {       
         AnimalHungerMax = AnimalHungerMax == 0 ? 3 : AnimalHungerMax;
 
-        SetInfoAtStart();
-        SwitchState(AnimalState.APPROACHING);
+        this.animalType = AnimalType.PIG;
+        SetDefaults();
     }
-
+    public override void FillHunger(bool fromPlayer)
+    {
+        base.FillHunger(fromPlayer);
+        RaiseFilledEvent();
+    }
     protected override void Update()
     {
         base.Update();

@@ -3,12 +3,17 @@ using UnityEngine;
 public class Mice : Animal
 {
     void Start()
-    {
-        
+    {        
         AnimalHungerMax = AnimalHungerMax == 0 ? 1 : AnimalHungerMax;
 
-        SetInfoAtStart();
-        SwitchState(AnimalState.APPROACHING);
+        this.animalType = AnimalType.MICE;
+        SetDefaults();
+    }
+
+    public override void FillHunger(bool fromPlayer)
+    {
+        base.FillHunger(fromPlayer);
+        RaiseFilledEvent();
     }
     protected override void Update()
     {

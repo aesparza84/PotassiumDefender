@@ -1,39 +1,45 @@
+using System;
 using UnityEngine;
 
 public class FoodSupply : MonoBehaviour
 {
-    [SerializeField]
-    private int supplyAmount;
+    [SerializeField] private int supplyAmount;
+    private int currSupplyCount;
 
+    /// <summary>
+    /// Event to trigger game over
+    /// </summary>
+    public static event Action OnSupplyDestroyed;
+
+    /// <summary>
+    /// Event fired when losing health
+    /// </summary>
+    public event Action<float> OnSupplyHit;
 
     void Start()
     {
-        supplyAmount = supplyAmount == 0 || supplyAmount < 50 ? 100 : supplyAmount; 
+        currSupplyCount = supplyAmount;
     }
-
-
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if (collision.gameObject.CompareTag("Animal"))
-    //    {
-    //        supplyAmount -= collision.gameObject.GetComponent<Animal>().AnimalHunger;
-
-    //        if (supplyAmount <= 0) 
-    //        {
-    //            DeactivateSupply();
-    //        }
-    //    }
-    //}
     
     public void ReduceAmount()
     {
-        this.supplyAmount -= 1;
+        this.currSupplyCount-= 1;
 
-        if (this.supplyAmount <= 0)
+        if (this.currSupplyCount <= 0)
             DeactivateSupply();
+
+        float hp = (float)currSupplyCount / (float)supplyAmount;
+        OnSupplyHit?.Invoke(hp);
     }
     private void DeactivateSupply()
     {
+        OnSupplyDestroyed?.Invoke();
         gameObject.SetActive(false);
+    }
+
+    public void RestartSupply()
+    {
+        currSupplyCount = supplyAmount;
+        gameObject.SetActive(true);
     }
 }
