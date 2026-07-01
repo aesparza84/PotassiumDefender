@@ -76,7 +76,7 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
         {
             Debug.Log("Animal Hit");
 
-            if (other.gameObject.TryGetComponent<Animal>(out Animal a))
+            if (other.gameObject.transform.parent.TryGetComponent<Animal>(out Animal a))
             {
                 a.FillHunger(true);
             }

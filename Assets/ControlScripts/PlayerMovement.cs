@@ -46,7 +46,6 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 finalHorizontal;
 
     private bool jumpPressed;
-    private bool isJumping;
     private bool isGrounded;
     private Vector3 groundPoint;
 
@@ -155,7 +154,6 @@ public class PlayerMovement : MonoBehaviour
         OnJump?.Invoke();
 
         jumpPressed = true;
-        isJumping = true;
         isGrounded = false;
 
         groundCheckTimer = groundCheckDisableTimer;
@@ -177,7 +175,6 @@ public class PlayerMovement : MonoBehaviour
             if (!isGrounded)
             {
                 isGrounded = true;
-                isJumping = false;
                 OnLand?.Invoke(rigidBody.linearVelocity.y);
                 Debug.Log($"Land Vel - {rigidBody.linearVelocity.y}");
             }

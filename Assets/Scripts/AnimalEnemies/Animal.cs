@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -36,6 +37,7 @@ public abstract class Animal : MonoBehaviour
     public Transform FoodSupplyTransform { get { return foodSupplyTransform; } set { foodSupplyTransform = value; } }
     protected Vector3 goalPos;
     protected Vector3 scurryPos; //Debug Vector
+    protected Quaternion rotToScurry;
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
     public Rigidbody rig { get; set; }
@@ -54,7 +56,11 @@ public abstract class Animal : MonoBehaviour
     /// </summary>
     public event System.Action<GameObject, Animal> OnAnimalDisable;
 
+    //Events for hunger
+    public event Action OnPileBite;
+    public event Action OnPlayerBite;
 
+    public event Action OnScurry;
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
     //External
@@ -96,6 +102,15 @@ public abstract class Animal : MonoBehaviour
         Debug.Log($"{gameObject.name} - Bite");
         AnimalHunger++;
 
+        if (fromPlayer)
+        {
+            OnPlayerBite?.Invoke();
+        }
+        else
+        {
+            OnPileBite?.Invoke();
+        }
+
         if (AnimalHunger >= animalHungerMax)
         {
             SwitchState(AnimalState.SCURRYING);
@@ -127,12 +142,16 @@ public abstract class Animal : MonoBehaviour
                 SetAgentSpeed(ScurryMovementSpeed);
                 Vector3 pos = CalculateScurryPos();
                 scurryPos = pos;
+                Vector3 scurryDir = (scurryPos - transform.position).normalized;
+                rotToScurry = Quaternion.LookRotation(scurryDir);
+
                 SetTargetViaPosition(pos);
                 TravelToGoal();
 
                 //Disable when scurry
                 Invoke("DisableAnimal", 3.0f);
 
+                OnScurry?.Invoke();
                 break;
             case AnimalState.IDLE:
                 //Stay still, do nothing
@@ -147,7 +166,7 @@ public abstract class Animal : MonoBehaviour
     protected virtual Vector3 CalculateScurryPos()
     {
         Vector3 dir = -transform.forward;
-        Quaternion rot = Quaternion.AngleAxis(Random.Range(-45,45),transform.up);
+        Quaternion rot = Quaternion.AngleAxis(UnityEngine.Random.Range(-45,45),transform.up);
         Vector3 f = rot * dir;
         return transform.position + f.normalized * 20;
     }
@@ -221,6 +240,9 @@ public abstract class Animal : MonoBehaviour
 
                 break;
             case AnimalState.SCURRYING:
+
+                transform.rotation = Quaternion.Lerp(transform.rotation,rotToScurry, 3 * Time.deltaTime);
+
                 break;
             case AnimalState.IDLE:
                 break;
