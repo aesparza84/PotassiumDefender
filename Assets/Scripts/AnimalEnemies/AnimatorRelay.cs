@@ -34,7 +34,9 @@ public class AnimatorRelay : MonoBehaviour
     private void Animal_OnScurry()
     {
         if (animator != null)
-            animator.CrossFade(MovementHash, 0.3f);
+        {
+            animator.CrossFade(MovementHash, 0.05f);
+        }
     }
 
     private void Animal_OnPlayerBite()
