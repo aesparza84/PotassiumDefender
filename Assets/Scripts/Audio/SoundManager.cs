@@ -40,6 +40,7 @@ public class SoundManager : MonoBehaviour
             s.gameObject.SetActive(true);
 
         s.clip = clipSO.getClip();
+        s.pitch = clipSO.pitch;
         s.volume = clipSO.volume;
         s.Play();
 

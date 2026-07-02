@@ -9,6 +9,8 @@ public class AnimatorRelay : MonoBehaviour
     [SerializeField] private string PlayerBiteAnimName;
     [SerializeField] private string MovementAnimName;
 
+    [SerializeField] private float crossFade = 0.3f;
+
     private int PileBiteHash;
     private int PlayerBiteHash;
     private int MovementHash;
@@ -31,11 +33,21 @@ public class AnimatorRelay : MonoBehaviour
         }
     }
 
+    private void OnEnable()
+    {
+        if (animal != null)
+        {
+            animal.OnPileBite += Animal_OnPileBite;
+            animal.OnPlayerBite += Animal_OnPlayerBite;
+            animal.OnScurry += Animal_OnScurry;
+        }
+    }
+
     private void Animal_OnScurry()
     {
         if (animator != null)
         {
-            animator.CrossFade(MovementHash, 0.05f);
+            animator.CrossFade(MovementHash, crossFade);
         }
     }
 

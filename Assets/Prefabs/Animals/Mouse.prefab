@@ -1699,6 +1699,7 @@ GameObject:
   - component: {fileID: 8850052209137411550}
   - component: {fileID: 6786358613611360903}
   - component: {fileID: 7317661349365871168}
+  - component: {fileID: 2803343589148100424}
   m_Layer: 0
   m_Name: Mouse
   m_TagString: Untagged
@@ -1791,3 +1792,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &2803343589148100424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9203266874183872524}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84f6252f02450ff45a2f7c259d503106, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFootSteps
+  sound: {fileID: 11400000, guid: f659ad874b066ee4dbf82326fffbe56d, type: 2}
+  stepInterval: 0.797

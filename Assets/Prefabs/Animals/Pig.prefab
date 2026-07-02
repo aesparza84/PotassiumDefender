@@ -98,7 +98,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 254671854639082493}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fff0960ef4ea6e04eac66b4a7fd2189d, type: 3}
   m_Name: 
@@ -123,6 +123,7 @@ MonoBehaviour:
   PileBiteAnimName: PigIdle
   PlayerBiteAnimName: PigIdle
   MovementAnimName: PigJump
+  crossFade: 0.3
 --- !u!1 &361063806589120113
 GameObject:
   m_ObjectHideFlags: 0
@@ -400,6 +401,7 @@ GameObject:
   - component: {fileID: 4583002474541262480}
   - component: {fileID: 6458009915367532332}
   - component: {fileID: 4528418497873505740}
+  - component: {fileID: 6134534926375850760}
   m_Layer: 0
   m_Name: Pig
   m_TagString: Untagged
@@ -492,6 +494,20 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 80
   m_CollisionDetection: 0
+--- !u!114 &6134534926375850760
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1300996604659817408}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84f6252f02450ff45a2f7c259d503106, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AnimalFootSteps
+  sound: {fileID: 11400000, guid: 1bd5e9547e2c9a94d8441add75caebc5, type: 2}
+  stepInterval: 0.655
 --- !u!1 &1435163997558084504
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,7 +1488,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7363848124424347951
 Transform:
   m_ObjectHideFlags: 0
@@ -1496,12 +1512,12 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7511321054015885156}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70b342d8ce5c2fd48b8fa3147d48d1d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.Rig
-  m_Weight: 1
+  m_Weight: 0
   m_Effectors:
   - m_Transform: {fileID: 4846610428314297195}
     m_Style:

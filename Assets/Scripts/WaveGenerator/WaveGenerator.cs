@@ -98,7 +98,7 @@ public class WaveGenerator : MonoBehaviour
 
         currSpawnDelay = 0.0f;
         difficultyIndex = 0;
-        currDifficulty = difficulties[difficulties.Length-1];
+        currDifficulty = difficulties[difficultyIndex];
 
         SwitchToState(WaveState.GENERATING);
     }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class PlayerFootSteps : MonoBehaviour
+public class FootStepSounds : MonoBehaviour
 {
     [SerializeField] private SoundSO sound;
 
