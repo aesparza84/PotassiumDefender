@@ -41,7 +41,7 @@ public class AnimalFootSteps : MonoBehaviour
             if (currInterval <= 0.0f)
             {
                 currInterval = stepInterval;
-                SoundManager.instance.PlaySound(sound, transform);
+                SoundManager.instance.PlaySound(sound, gameObject.transform);
             }
         }
 
