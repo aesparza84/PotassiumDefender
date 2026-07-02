@@ -75,6 +75,7 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
         if (other.gameObject.CompareTag("Animal"))
         {
             Debug.Log("Animal Hit");
+            ParticleManager.Instance.PlayBanannaImpact(other.transform.position);
 
             if (other.gameObject.transform.parent.TryGetComponent<Animal>(out Animal a))
             {

@@ -113,6 +113,8 @@ public abstract class Animal : MonoBehaviour
         else
         {
             OnPileBite?.Invoke();
+
+            ParticleManager.Instance.PlayBanannaImpact(gameObject.transform.position);
         }
 
         if (AnimalHunger >= animalHungerMax)
