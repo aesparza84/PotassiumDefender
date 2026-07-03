@@ -217,6 +217,9 @@ public abstract class Animal : MonoBehaviour
     }
     protected void OnGameCleanUp()
     {
+        if (!gameObject.activeInHierarchy)
+            return;
+
         SwitchState(AnimalState.SCURRYING);
     }
     protected virtual void RaiseFilledEvent()

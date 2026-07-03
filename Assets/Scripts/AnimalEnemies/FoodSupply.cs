@@ -23,8 +23,9 @@ public class FoodSupply : MonoBehaviour
     {
         startHeight = transform.position.y;
         endHeight = -startHeight;
+        RestartSupply();
         
-        currSupplyCount = supplyAmount;
+        GameCurator.OnInitializeGame += OnInitialize;
     }
 
     private void OnEnable()
@@ -34,7 +35,7 @@ public class FoodSupply : MonoBehaviour
 
     private void OnInitialize(Transform obj)
     {
-        transform.position = new Vector3(transform.position.x, startHeight, transform.position.z);
+        RestartSupply();
     }
 
     private void OnDisable()
@@ -59,12 +60,13 @@ public class FoodSupply : MonoBehaviour
     private void DestroySupply()
     {
         OnSupplyDestroyed?.Invoke();
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 
     public void RestartSupply()
     {
         currSupplyCount = supplyAmount;
-        gameObject.SetActive(true);
+        transform.position = new Vector3(transform.position.x, startHeight, transform.position.z);
+        //gameObject.SetActive(true);
     }
 }

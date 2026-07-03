@@ -37,7 +37,7 @@ public class FoodSupplyUI : MonoBehaviour
         if (fillImage != null)
         {
             fillImage.gameObject.SetActive(true);
-            fillImage.fillAmount = 1;    
+            fillImage.fillAmount = 0;    
         }
     }
 

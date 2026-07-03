@@ -1,12 +1,14 @@
 using JetBrains.Annotations;
 using UnityEngine;
 using System;
+using System.Collections;
 
 [RequireComponent(typeof(GameTimer))]
 public class GameCurator : MonoBehaviour
 {
-    [Header("Player Spawn Point")]
+    [Header("External")]
     [SerializeField] private Transform playerSpawnPosition;
+    [SerializeField] private Transform foodSupplyPoint;
 
     /// <summary>
     /// Timer tracking how long player has survived

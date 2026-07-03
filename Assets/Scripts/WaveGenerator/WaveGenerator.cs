@@ -59,6 +59,8 @@ public class WaveGenerator : MonoBehaviour
     /// </summary>
     private int waveCount;
 
+    private int spawnRetries;
+
     /// <summary>
     /// How long the generator waits before executing next wave
     /// </summary>
@@ -117,6 +119,10 @@ public class WaveGenerator : MonoBehaviour
     {
         difficultyIndex = 0;
         currDifficulty = difficulties[difficultyIndex];
+        expectedWeight = baseWeightLimit;
+        expectedWeight = 0;
+        currWeight = 0;
+        waveCount = 0;
 
         SwitchToState(WaveState.GENERATING);
         currSpawnDelay = initialSpawnDelay;
@@ -228,37 +234,48 @@ public class WaveGenerator : MonoBehaviour
         
         float rand = Random.Range(0.0f, 1.0f);
 
-        if (rand < currDifficulty.mouseChance)
+        if (spawnRetries >= 3)
         {
             animalObj = getMouse();
         }
         else
         {
-            rand -= currDifficulty.mouseChance;
-            if (rand < currDifficulty.batChance)
+            if (rand < currDifficulty.mouseChance)
             {
-                if (batWeight + waveSpecificWeight > expectedWeight)
-                {
-                    Debug.Log("Bat overfill - SKIP");
-                    return;
-                }
-
-                float height = Random.Range(4.0f, 6.0f);
-                spawnPos.y = height;
-
-                animalObj = getBat();
+                animalObj = getMouse();
             }
             else
             {
-                if (pigWeight + waveSpecificWeight > expectedWeight)
+                rand -= currDifficulty.mouseChance;
+                if (rand < currDifficulty.batChance)
                 {
-                    Debug.Log("Pig overfill - SKIP");
-                    return;
-                }
+                    if (batWeight + waveSpecificWeight > expectedWeight)
+                    {
+                        Debug.Log("Bat overfill - SKIP");
+                        spawnRetries++;
+                        return;
+                    }
 
-                animalObj = getPig();
+                    float height = Random.Range(4.0f, 6.0f);
+                    spawnPos.y = height;
+
+                    animalObj = getBat();
+                }
+                else
+                {
+                    if (pigWeight + waveSpecificWeight > expectedWeight)
+                    {
+                        Debug.Log("Pig overfill - SKIP");
+                        spawnRetries++;
+                        return;
+                    }
+
+                    animalObj = getPig();
+                }
             }
         }
+
+        spawnRetries = 0;
         
         animal = animalObj.GetComponent<Animal>();
 
