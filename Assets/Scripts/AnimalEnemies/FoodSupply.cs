@@ -16,22 +16,47 @@ public class FoodSupply : MonoBehaviour
     /// </summary>
     public event Action<float> OnSupplyHit;
 
+    private float startHeight;
+    private float endHeight;
+
     void Start()
     {
+        startHeight = transform.position.y;
+        endHeight = -startHeight;
+        
         currSupplyCount = supplyAmount;
     }
-    
+
+    private void OnEnable()
+    {
+        GameCurator.OnInitializeGame += OnInitialize;
+    }
+
+    private void OnInitialize(Transform obj)
+    {
+        transform.position = new Vector3(transform.position.x, startHeight, transform.position.z);
+    }
+
+    private void OnDisable()
+    {
+        GameCurator.OnInitializeGame -= OnInitialize;
+    }
+
     public void ReduceAmount()
     {
         this.currSupplyCount-= 1;
+        float hp = (float)currSupplyCount / (float)supplyAmount;
+
+        float newHeight = Mathf.Lerp(startHeight, endHeight, 1 - hp);
+        transform.position = new Vector3(transform.position.x, newHeight, transform.position.z);
+
 
         if (this.currSupplyCount <= 0)
-            DeactivateSupply();
+            DestroySupply();
 
-        float hp = (float)currSupplyCount / (float)supplyAmount;
         OnSupplyHit?.Invoke(hp);
     }
-    private void DeactivateSupply()
+    private void DestroySupply()
     {
         OnSupplyDestroyed?.Invoke();
         gameObject.SetActive(false);

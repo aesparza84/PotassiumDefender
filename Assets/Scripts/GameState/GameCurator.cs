@@ -1,13 +1,28 @@
 using JetBrains.Annotations;
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(GameTimer))]
-public class GameOverTrigger : MonoBehaviour
+public class GameCurator : MonoBehaviour
 {
+    [Header("Player Spawn Point")]
+    [SerializeField] private Transform playerSpawnPosition;
+
     /// <summary>
     /// Timer tracking how long player has survived
     /// </summary>
     private GameTimer timer;
+
+    /// <summary>
+    /// Event to set up game area when leaving main-menu
+    /// </summary>
+    public static event Action<Transform> OnInitializeGame;
+
+    /// <summary>
+    /// Event when game ends, signals game area clean up
+    /// </summary>
+    public static event Action OnCleanUpGame;
+
 
     /// <summary>
     /// Fires event alerting of game over. Includes total time in float seconds
@@ -24,6 +39,25 @@ public class GameOverTrigger : MonoBehaviour
         timer.StartTimer();
     }
 
+    /// <summary>
+    /// Reacts to when player hits PLAY from main menu, raises Initialize event
+    /// </summary>
+    public void OnMainMenuPlay()
+    {
+        OnInitializeGame?.Invoke(playerSpawnPosition);
+    }
+
+    /// <summary>
+    /// Reacts to when player hits Game End triggers, raises: CleanUp event | GameOver event
+    /// </summary>
+    private void OnGameCleanUp()
+    {
+        OnCleanUpGame?.Invoke();
+    }
+
+    /// <summary>
+    /// Reacts player loses (supply destroyed), raises GameOver event(elapsedTime)
+    /// </summary>
     private void OnSupplyDestroyed()
     {
         timer.StopTimer();
@@ -35,6 +69,8 @@ public class GameOverTrigger : MonoBehaviour
         
         //GLOBAL game over event, with timer
         OnGameOver?.Invoke(time);
+
+        OnGameCleanUp();
     }
 
     private void OnDisable()

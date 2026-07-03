@@ -32,6 +32,7 @@ public class WaveGenerator : MonoBehaviour
     /// </summary>
     [SerializeField] private float spawnDelay;
     private float currSpawnDelay;
+    private const float initialSpawnDelay = 5.0f;
 
     /// <summary>
     /// Multiplier applied to baseAmount each wave iteration
@@ -96,11 +97,40 @@ public class WaveGenerator : MonoBehaviour
         weightMap.Add(typeof(Bat), batWeight);
         weightMap.Add(typeof(Mice), mouseWeight);
 
-        currSpawnDelay = 0.0f;
+        //currSpawnDelay = 0.0f;
+        //difficultyIndex = 0;
+        //currDifficulty = difficulties[difficultyIndex];
+
+        //SwitchToState(WaveState.GENERATING);
+
+        //StartOff
+        OnCleanUp();
+    }
+
+    private void OnEnable()
+    {
+        GameCurator.OnCleanUpGame += OnCleanUp;
+        GameCurator.OnInitializeGame += OnInitialize;
+    }
+
+    private void OnInitialize(Transform obj)
+    {
         difficultyIndex = 0;
         currDifficulty = difficulties[difficultyIndex];
 
         SwitchToState(WaveState.GENERATING);
+        currSpawnDelay = initialSpawnDelay;
+    }
+
+    private void OnCleanUp()
+    {
+        SwitchToState(WaveState.IDLE);
+    }
+
+    private void OnDisable()
+    {
+        GameCurator.OnCleanUpGame -= OnCleanUp;
+        GameCurator.OnInitializeGame -= OnInitialize;
     }
 
     private void Update()
@@ -287,7 +317,7 @@ public class WaveGenerator : MonoBehaviour
         }
         else
         {
-            mouse = Instantiate(MicePrefab);
+            mouse = Instantiate(MicePrefab, transform.position, Quaternion.identity);
         }
 
         return mouse;
@@ -317,7 +347,7 @@ public class WaveGenerator : MonoBehaviour
         }
         else
         {
-            pig = Instantiate(PigPrefab);
+            pig = Instantiate(PigPrefab, transform.position, Quaternion.identity);
         }
         
         return pig;

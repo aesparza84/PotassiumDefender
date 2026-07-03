@@ -209,15 +209,15 @@ public abstract class Animal : MonoBehaviour
             agent = GetComponent<NavMeshAgent>();
 
         //GLOBAL Game over trigger
-        GameOverTrigger.OnGameOver += OnGameOverState;
+        GameCurator.OnCleanUpGame += OnGameCleanUp;
 
         AnimalHunger = 0;
         currFeedDelay = 0;
         SwitchState(AnimalState.APPROACHING);
     }
-    protected void OnGameOverState(float time)
+    protected void OnGameCleanUp()
     {
-        SwitchState(AnimalState.IDLE);
+        SwitchState(AnimalState.SCURRYING);
     }
     protected virtual void RaiseFilledEvent()
     {
@@ -279,6 +279,6 @@ public abstract class Animal : MonoBehaviour
 
     protected void OnDisable()
     {
-        GameOverTrigger.OnGameOver -= OnGameOverState;
+        GameCurator.OnCleanUpGame -= OnGameCleanUp;
     }
 }
