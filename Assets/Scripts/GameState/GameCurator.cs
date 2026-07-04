@@ -8,7 +8,6 @@ public class GameCurator : MonoBehaviour
 {
     [Header("External")]
     [SerializeField] private Transform playerSpawnPosition;
-    [SerializeField] private Transform foodSupplyPoint;
 
     /// <summary>
     /// Timer tracking how long player has survived
@@ -47,6 +46,8 @@ public class GameCurator : MonoBehaviour
     public void OnMainMenuPlay()
     {
         OnInitializeGame?.Invoke(playerSpawnPosition);
+        timer.ResetTimer();
+        timer.StartTimer();
     }
 
     /// <summary>

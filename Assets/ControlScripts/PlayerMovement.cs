@@ -58,7 +58,8 @@ public class PlayerMovement : MonoBehaviour
     public event Action<float> OnLand;
     //public event Action<Vector2> OnMove;
     //public event Action OnIdle;
-    
+
+    private bool PlayerActive;
 
     private void Awake()
     {
@@ -89,6 +90,21 @@ public class PlayerMovement : MonoBehaviour
         
         inputHub.OnJumpActive += OnJumpActive;
         inputHub.OnJumpStop += OnJumpStop;
+
+        GameCurator.OnInitializeGame += OnInitialize;
+        GameCurator.OnCleanUpGame += OnCleanUp;
+    }
+
+    private void OnCleanUp()
+    {
+        PlayerActive = false;
+    }
+
+    private void OnInitialize(Transform obj)
+    {
+        transform.position = obj.position;
+        transform.rotation = obj.rotation;
+        PlayerActive = true;
     }
 
     private void OnJumpStop()
@@ -114,6 +130,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!PlayerActive)
+            return;
+
         GroundCheck();
         //GravityGroundCheck();
         HorizontalMovement();
@@ -122,6 +141,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
+        if (!PlayerActive)
+            return;
+
         //Disable groundcheck
         if (groundCheckTimer > 0.0f)
         {
@@ -263,6 +285,8 @@ public class PlayerMovement : MonoBehaviour
         inputHub.OnMoveStop -= OnMoveStop;
         inputHub.OnJumpActive -= OnJumpActive;
         inputHub.OnJumpStop -= OnJumpStop;
+        GameCurator.OnInitializeGame -= OnInitialize;
+        GameCurator.OnCleanUpGame -= OnCleanUp;
     }
 
     private void OnDrawGizmos()

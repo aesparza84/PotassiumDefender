@@ -20,7 +20,7 @@ public class GameTimer : MonoBehaviour
         return currTime;
     }
 
-    public void RestTimer()
+    public void ResetTimer()
     {
         isTicking = false;
         currTime = 0.0f;

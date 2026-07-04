@@ -1262,7 +1262,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7515567475191827352, guid: b59b39304d656a54a86d314fa70fc28f, type: 3}
       propertyPath: baseWeightLimit
-      value: 15
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7515567475191827352, guid: b59b39304d656a54a86d314fa70fc28f, type: 3}
       propertyPath: FoodSupplyTransform
@@ -1271,7 +1271,7 @@ PrefabInstance:
     - target: {fileID: 7515567475191827352, guid: b59b39304d656a54a86d314fa70fc28f, type: 3}
       propertyPath: 'difficulties.Array.data[0]'
       value: 
-      objectReference: {fileID: 11400000, guid: f5904408bc062d34f85acb7c41dd584a, type: 2}
+      objectReference: {fileID: 11400000, guid: 48af8bbda31d50045b52b06cbbe15ed2, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -8579,7 +8579,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1190952946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8802,7 +8802,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3495268452090150329, guid: 709fc85f395193d4fbda1bace15f46ab, type: 3}
       propertyPath: supplyAmount
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

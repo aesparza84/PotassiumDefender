@@ -123,6 +123,8 @@ public abstract class Animal : MonoBehaviour
 
             if (fromPlayer)
                 OnFilledFromPlayer?.Invoke(this.animalType); //Only fires when player has last hit animal
+
+            RaiseFilledEvent();
         }
     }
     protected virtual void SwitchState(AnimalState state)

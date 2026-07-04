@@ -10,6 +10,8 @@ public class ScoreTracker : MonoBehaviour
     private int batHitCount, mouseHitCount, pigHitCount;
 
     private float timerCount;
+    private int min;
+    private int sec;
 
     public static event Action<int, int, int, int, float> UpdateScoreUI;
     
@@ -19,6 +21,38 @@ public class ScoreTracker : MonoBehaviour
         timerCount = 0.0f;
 
         RestartValues();
+
+        Animal.OnFilledFromPlayer += OnAddToScore;
+        GameCurator.OnInitializeGame += OnInitialize;
+        GameCurator.OnGameOver += OnGameOver_CalcFinalScore;
+    }
+
+    private void OnGameOver_CalcFinalScore(float obj)
+    {
+        timerCount = obj;
+        min = Mathf.FloorToInt(obj / 60);
+        sec = Mathf.FloorToInt(obj % 60);
+        CalculateTotalResult();
+    }
+
+    private void OnInitialize(Transform obj)
+    {
+        mouseHitCount = 0;
+        batHitCount = 0;
+        pigHitCount = 0;
+        scoreTotal = 0;
+    }
+
+    private void OnAddToScore(AnimalType obj)
+    {
+        AddPoint(obj);
+    }
+
+    private void OnDisable()
+    {
+        GameCurator.OnInitializeGame -= OnInitialize;
+        Animal.OnFilledFromPlayer -= OnAddToScore;
+        GameCurator.OnGameOver += OnGameOver_CalcFinalScore;
     }
 
     public void AddPoint(AnimalType animal)
@@ -41,8 +75,8 @@ public class ScoreTracker : MonoBehaviour
 
     public void CalculateTotalResult()
     {
-        timerCount = timer.GetTime();
-        scoreTotal = (int)((batHitCount * 2) + (mouseHitCount * 1) + (pigHitCount * 4) + timerCount); // + Timer 
+        //timerCount = timer.GetTime();
+        scoreTotal = (int)((batHitCount * 2) + (mouseHitCount * 1) + (pigHitCount * 3) + timerCount); // + Timer 
 
         UpdateScoreUI?.Invoke(scoreTotal, batHitCount, mouseHitCount, pigHitCount, timerCount);
     }

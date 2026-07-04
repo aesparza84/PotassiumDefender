@@ -160,8 +160,11 @@ public class WaveGenerator : MonoBehaviour
                 break;
             case WaveState.ACTIVE:
 
-                if (currWeight == 0)
+                if (currWeight <= 0)
+                {
+                    currWeight = 0;
                     SwitchToState(WaveState.SWITCHING);
+                }
 
                 break;
             case WaveState.SWITCHING:

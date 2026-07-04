@@ -46,9 +46,6 @@ public class PlayerControlHub : MonoBehaviour
     {
         if (playerInputs != null)
             playerInputs.Enable();
-
-        transform.position = pos.position;
-        transform.rotation = pos.rotation;
     }
 
     private void OnCleanUpGame()
