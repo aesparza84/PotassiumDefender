@@ -23,13 +23,23 @@ public class MenuCameraManager : MonoBehaviour
         UpdateCurrentCamera(menuType.MainMenu);
     }
 
+    private void Start()
+    {
+        GameCurator.OnGameOver += OnGameOver;
+    }
+
+    private void OnGameOver(float obj)
+    {
+        UpdateCurrentCamera(menuType.RestartMenu);
+    }
+
     private void Update()
     {
-        if (didPlayerLose)
-        {
-            tracker.CalculateTotalResult();
-            UpdateCurrentCamera(menuType.RestartMenu);
-        }
+        //if (didPlayerLose)
+        //{
+        //    tracker.CalculateTotalResult();
+        //    UpdateCurrentCamera(menuType.RestartMenu);
+        //}
         
     }
 
@@ -41,6 +51,7 @@ public class MenuCameraManager : MonoBehaviour
     private void OnDisable()
     {
         MainMenu.UpdateCamera -= UpdateCurrentCamera;
+        GameCurator.OnGameOver -= OnGameOver;
     }
 
 

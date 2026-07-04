@@ -22,7 +22,7 @@ public class Bat : Animal
     public override void FillHunger(bool fromPlayer)
     {
         base.FillHunger(fromPlayer);
-        RaiseFilledEvent();
+        //RaiseFilledEvent();
     }
     protected override void TravelToGoal()
     {
@@ -114,7 +114,7 @@ public class Bat : Animal
         if(other.gameObject.CompareTag("Finish") && currState != AnimalState.SCURRYING)
         {
             rig.useGravity = true;
-            rig.AddForce(FoodSupplyTransform.position); //Ensuring the object doesn't get stuck 
+            //rig.AddForce(FoodSupplyTransform.position); //Ensuring the object doesn't get stuck 
         }
     }
 }

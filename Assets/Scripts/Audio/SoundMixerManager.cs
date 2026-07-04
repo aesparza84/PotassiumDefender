@@ -12,4 +12,8 @@ public class SoundMixerManager : MonoBehaviour
     {
         mixer.SetFloat("SoundFXVolume",amount);
     }
+    public void SetMusicVol(float amount)
+    {
+        mixer.SetFloat("MusicVolume", amount);
+    }
 }

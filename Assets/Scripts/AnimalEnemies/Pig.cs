@@ -13,7 +13,7 @@ public class Pig : Animal
     public override void FillHunger(bool fromPlayer)
     {
         base.FillHunger(fromPlayer);
-        RaiseFilledEvent();
+        //RaiseFilledEvent();
     }
     protected override void Update()
     {

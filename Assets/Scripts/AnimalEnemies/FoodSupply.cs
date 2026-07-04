@@ -16,30 +16,57 @@ public class FoodSupply : MonoBehaviour
     /// </summary>
     public event Action<float> OnSupplyHit;
 
+    private float startHeight;
+    private float endHeight;
+
     void Start()
     {
-        currSupplyCount = supplyAmount;
+        startHeight = transform.position.y;
+        endHeight = -startHeight;
+        RestartSupply();
+        
+        GameCurator.OnInitializeGame += OnInitialize;
     }
-    
+
+    private void OnEnable()
+    {
+        GameCurator.OnInitializeGame += OnInitialize;
+    }
+
+    private void OnInitialize(Transform obj)
+    {
+        RestartSupply();
+    }
+
+    private void OnDisable()
+    {
+        GameCurator.OnInitializeGame -= OnInitialize;
+    }
+
     public void ReduceAmount()
     {
         this.currSupplyCount-= 1;
+        float hp = (float)currSupplyCount / (float)supplyAmount;
+
+        float newHeight = Mathf.Lerp(startHeight, endHeight, 1 - hp);
+        transform.position = new Vector3(transform.position.x, newHeight, transform.position.z);
+
 
         if (this.currSupplyCount <= 0)
-            DeactivateSupply();
+            DestroySupply();
 
-        float hp = (float)currSupplyCount / (float)supplyAmount;
         OnSupplyHit?.Invoke(hp);
     }
-    private void DeactivateSupply()
+    private void DestroySupply()
     {
         OnSupplyDestroyed?.Invoke();
-        gameObject.SetActive(false);
+        //gameObject.SetActive(false);
     }
 
     public void RestartSupply()
     {
         currSupplyCount = supplyAmount;
-        gameObject.SetActive(true);
+        transform.position = new Vector3(transform.position.x, startHeight, transform.position.z);
+        //gameObject.SetActive(true);
     }
 }

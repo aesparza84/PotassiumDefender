@@ -32,6 +32,7 @@ public class WaveGenerator : MonoBehaviour
     /// </summary>
     [SerializeField] private float spawnDelay;
     private float currSpawnDelay;
+    private const float initialSpawnDelay = 5.0f;
 
     /// <summary>
     /// Multiplier applied to baseAmount each wave iteration
@@ -57,6 +58,8 @@ public class WaveGenerator : MonoBehaviour
     /// Current wave iteration
     /// </summary>
     private int waveCount;
+
+    private int spawnRetries;
 
     /// <summary>
     /// How long the generator waits before executing next wave
@@ -96,11 +99,44 @@ public class WaveGenerator : MonoBehaviour
         weightMap.Add(typeof(Bat), batWeight);
         weightMap.Add(typeof(Mice), mouseWeight);
 
-        currSpawnDelay = 0.0f;
+        //currSpawnDelay = 0.0f;
+        //difficultyIndex = 0;
+        //currDifficulty = difficulties[difficultyIndex];
+
+        //SwitchToState(WaveState.GENERATING);
+
+        //StartOff
+        OnCleanUp();
+    }
+
+    private void OnEnable()
+    {
+        GameCurator.OnCleanUpGame += OnCleanUp;
+        GameCurator.OnInitializeGame += OnInitialize;
+    }
+
+    private void OnInitialize(Transform obj)
+    {
         difficultyIndex = 0;
-        currDifficulty = difficulties[difficulties.Length-1];
+        currDifficulty = difficulties[difficultyIndex];
+        expectedWeight = baseWeightLimit;
+        expectedWeight = 0;
+        currWeight = 0;
+        waveCount = 0;
 
         SwitchToState(WaveState.GENERATING);
+        currSpawnDelay = initialSpawnDelay;
+    }
+
+    private void OnCleanUp()
+    {
+        SwitchToState(WaveState.IDLE);
+    }
+
+    private void OnDisable()
+    {
+        GameCurator.OnCleanUpGame -= OnCleanUp;
+        GameCurator.OnInitializeGame -= OnInitialize;
     }
 
     private void Update()
@@ -124,8 +160,11 @@ public class WaveGenerator : MonoBehaviour
                 break;
             case WaveState.ACTIVE:
 
-                if (currWeight == 0)
+                if (currWeight <= 0)
+                {
+                    currWeight = 0;
                     SwitchToState(WaveState.SWITCHING);
+                }
 
                 break;
             case WaveState.SWITCHING:
@@ -198,37 +237,48 @@ public class WaveGenerator : MonoBehaviour
         
         float rand = Random.Range(0.0f, 1.0f);
 
-        if (rand < currDifficulty.mouseChance)
+        if (spawnRetries >= 3)
         {
             animalObj = getMouse();
         }
         else
         {
-            rand -= currDifficulty.mouseChance;
-            if (rand < currDifficulty.batChance)
+            if (rand < currDifficulty.mouseChance)
             {
-                if (batWeight + waveSpecificWeight > expectedWeight)
-                {
-                    Debug.Log("Bat overfill - SKIP");
-                    return;
-                }
-
-                float height = Random.Range(4.0f, 6.0f);
-                spawnPos.y = height;
-
-                animalObj = getBat();
+                animalObj = getMouse();
             }
             else
             {
-                if (pigWeight + waveSpecificWeight > expectedWeight)
+                rand -= currDifficulty.mouseChance;
+                if (rand < currDifficulty.batChance)
                 {
-                    Debug.Log("Pig overfill - SKIP");
-                    return;
-                }
+                    if (batWeight + waveSpecificWeight > expectedWeight)
+                    {
+                        Debug.Log("Bat overfill - SKIP");
+                        spawnRetries++;
+                        return;
+                    }
 
-                animalObj = getPig();
+                    float height = Random.Range(4.0f, 6.0f);
+                    spawnPos.y = height;
+
+                    animalObj = getBat();
+                }
+                else
+                {
+                    if (pigWeight + waveSpecificWeight > expectedWeight)
+                    {
+                        Debug.Log("Pig overfill - SKIP");
+                        spawnRetries++;
+                        return;
+                    }
+
+                    animalObj = getPig();
+                }
             }
         }
+
+        spawnRetries = 0;
         
         animal = animalObj.GetComponent<Animal>();
 
@@ -287,7 +337,7 @@ public class WaveGenerator : MonoBehaviour
         }
         else
         {
-            mouse = Instantiate(MicePrefab);
+            mouse = Instantiate(MicePrefab, transform.position, Quaternion.identity);
         }
 
         return mouse;
@@ -317,7 +367,7 @@ public class WaveGenerator : MonoBehaviour
         }
         else
         {
-            pig = Instantiate(PigPrefab);
+            pig = Instantiate(PigPrefab, transform.position, Quaternion.identity);
         }
         
         return pig;

@@ -21,12 +21,17 @@ public class PlayerControlHub : MonoBehaviour
     {
         
     }
+
+
     private void OnEnable()
     {
+        GameCurator.OnCleanUpGame += OnCleanUpGame;
+        GameCurator.OnInitializeGame += OnInitializeGame;
+
         if (playerInputs == null)
             playerInputs = new PlayerInputs();
 
-        playerInputs.Enable();
+        playerInputs.Disable();
         playerInputs.PlayerGround.Movement.performed += OnMovementStart;
         playerInputs.PlayerGround.Movement.canceled += OnMovementStop;
         playerInputs.PlayerGround.Shoot.performed += OnShootStart;
@@ -36,6 +41,17 @@ public class PlayerControlHub : MonoBehaviour
 
         playerInputs.PlayerGround.CameraAim.performed += OnCameraAimPerform;
         playerInputs.PlayerGround.CameraAim.canceled += OnCamerAimStop;
+    }
+    private void OnInitializeGame(Transform pos)
+    {
+        if (playerInputs != null)
+            playerInputs.Enable();
+    }
+
+    private void OnCleanUpGame()
+    {
+        if (playerInputs != null)
+            playerInputs.Disable();
     }
 
     private void OnCamerAimStop(InputAction.CallbackContext obj)
@@ -81,6 +97,9 @@ public class PlayerControlHub : MonoBehaviour
 
     private void OnDisable()
     {
+        GameCurator.OnCleanUpGame -= OnCleanUpGame;
+        GameCurator.OnInitializeGame -= OnInitializeGame;
+
         if (playerInputs == null)
             return;
 

@@ -56,11 +56,15 @@ public abstract class Animal : MonoBehaviour
     /// </summary>
     public event System.Action<GameObject, Animal> OnAnimalDisable;
 
+    //State changes
+    public event Action OnApproach;
+    public event Action OnEating;
+    public event Action OnScurry;
+
     //Events for hunger
     public event Action OnPileBite;
     public event Action OnPlayerBite;
 
-    public event Action OnScurry;
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
     //External
@@ -109,6 +113,8 @@ public abstract class Animal : MonoBehaviour
         else
         {
             OnPileBite?.Invoke();
+
+            ParticleManager.Instance.PlayBanannaImpact(gameObject.transform.position);
         }
 
         if (AnimalHunger >= animalHungerMax)
@@ -117,6 +123,8 @@ public abstract class Animal : MonoBehaviour
 
             if (fromPlayer)
                 OnFilledFromPlayer?.Invoke(this.animalType); //Only fires when player has last hit animal
+
+            RaiseFilledEvent();
         }
     }
     protected virtual void SwitchState(AnimalState state)
@@ -129,13 +137,16 @@ public abstract class Animal : MonoBehaviour
                 SetAgentSpeed(approachMovementSpeed);
                 SetTargetViaTransform(FoodSupplyTransform);
                 TravelToGoal();
+                transform.LookAt(goalPos);
 
+                OnApproach?.Invoke();
                 break;
             case AnimalState.EATING:
                 SetTargetViaTransform(null); //Full stop at position
                 SetTargetViaPosition(transform.position);
                 SetAgentSpeed(0);
                                 
+                OnEating?.Invoke();
                 break;
             case AnimalState.SCURRYING:
                 //somehwere behind animal
@@ -200,15 +211,18 @@ public abstract class Animal : MonoBehaviour
             agent = GetComponent<NavMeshAgent>();
 
         //GLOBAL Game over trigger
-        GameOverTrigger.OnGameOver += OnGameOverState;
+        GameCurator.OnCleanUpGame += OnGameCleanUp;
 
         AnimalHunger = 0;
         currFeedDelay = 0;
         SwitchState(AnimalState.APPROACHING);
     }
-    protected void OnGameOverState(float time)
+    protected void OnGameCleanUp()
     {
-        SwitchState(AnimalState.IDLE);
+        if (!gameObject.activeInHierarchy)
+            return;
+
+        SwitchState(AnimalState.SCURRYING);
     }
     protected virtual void RaiseFilledEvent()
     {
@@ -220,7 +234,7 @@ public abstract class Animal : MonoBehaviour
         switch (currState)
         {
             case AnimalState.APPROACHING:
-     
+
                 break;
             case AnimalState.EATING:
                 if (currFeedDelay > 0.0f)
@@ -270,6 +284,6 @@ public abstract class Animal : MonoBehaviour
 
     protected void OnDisable()
     {
-        GameOverTrigger.OnGameOver -= OnGameOverState;
+        GameCurator.OnCleanUpGame -= OnGameCleanUp;
     }
 }

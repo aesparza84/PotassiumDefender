@@ -6,8 +6,13 @@ public class SoundSO : ScriptableObject
     public AudioClip[] clips;
 
     [Range(0, 1)]
-    public float volume;
+    public float volume = 1; 
+    
+    [Range(-3, 3)]
+    public float pitch = 1;
 
+    [Range(0, 1)]
+    public float Spatial_Blend = 1;
     public AudioClip getClip()
     {
         if (clips.Length == 1)

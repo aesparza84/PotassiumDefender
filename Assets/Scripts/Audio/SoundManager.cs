@@ -39,8 +39,11 @@ public class SoundManager : MonoBehaviour
         if (!s.isActiveAndEnabled)
             s.gameObject.SetActive(true);
 
+        s.transform.position = transform.position;
         s.clip = clipSO.getClip();
+        s.pitch = clipSO.pitch;
         s.volume = clipSO.volume;
+        s.spatialBlend = clipSO.Spatial_Blend;
         s.Play();
 
         float len = s.clip.length;
