@@ -1,8 +1,10 @@
 using NUnit.Framework;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem.iOS;
 using UnityEngine.UI;
 
 public class FadeTransition : MonoBehaviour
@@ -30,6 +32,12 @@ public class FadeTransition : MonoBehaviour
 
     private string nextCameraName;
 
+    //Waiting for input
+    private bool acceptingUserInput;
+
+    public static event Action<bool> OnReadyForScoreInput;
+
+
     [SerializeField]
     private MainMenu mainMenu; //Better to call the ChangeView method since it's public 
 
@@ -45,6 +53,13 @@ public class FadeTransition : MonoBehaviour
         directionalLight.transform.position = dirLightPositions[0].position;
     }
 
+    public void ToggleUserInput(bool accept)
+    {
+        this.acceptingUserInput = accept;
+        OnReadyForScoreInput?.Invoke(true);
+    }
+
+
     private void Update()
     {
         //Start Aligning the camera to face the sun
@@ -56,8 +71,12 @@ public class FadeTransition : MonoBehaviour
         //Start zooming into the sun
         if (!zoomCam.IsParticipatingInBlend() && zoomCam.gameObject.activeInHierarchy && zoomCam.IsLive)
         {
-            WaitTime(false, false, 1);
-            
+
+            //Either the camera will continue the zoom, or hold while user is inputting
+            if (!acceptingUserInput)
+            {
+                WaitTime(false, false, 1);
+            }            
         }
 
         SwitchToNextMajorCamera(nextCameraName);

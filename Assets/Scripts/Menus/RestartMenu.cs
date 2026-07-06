@@ -35,7 +35,7 @@ public class RestartMenu : MonoBehaviour
         batText.text = $"Bats: {batHit}";
         mouseText.text = $"Mouse: {mouseHit}";
         pigText.text = $"Pig: {pigHit}";
-        timeDurationText.text = $"Duration: {timeDuration}";
+        timeDurationText.text = $"Duration: {timeDuration:000.00} sec.";
     }
 
     

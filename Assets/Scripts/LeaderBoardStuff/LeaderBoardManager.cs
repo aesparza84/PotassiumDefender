@@ -1,5 +1,7 @@
 using JetBrains.Annotations;
+using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading.Tasks;
 using TMPro;
 using Unity.Services.Authentication;
@@ -60,6 +62,35 @@ public class LeaderBoardManager : MonoBehaviour
         AddScore(newScore);
     }
 
+    public void OnNameChanged(string name)
+    {
+        name = name.ToUpper().Trim();
+
+        userNameInputField.SetTextWithoutNotify(name);
+    }
+
+    public void OnDeselect(string name)
+    {
+        if (name.Length < 3)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(name);
+
+            int diff = 3 - name.Length;
+            for (int i = 0; i < diff; i++)
+            {
+                sb.Append("A");
+            }
+
+            name = sb.ToString();
+        }
+        else if (name.Length > 3)
+        {
+            name = name.Substring(0, 3);
+        }
+
+        userNameInputField.SetTextWithoutNotify(name);
+    }
     private void UpdateName()
     {
         if (userNameInputField != null)
@@ -70,8 +101,23 @@ public class LeaderBoardManager : MonoBehaviour
         if (username == string.Empty)
             username = "AAA";
 
-        if (username.Length > 3)
+        if (username.Length < 3)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append(username);
+
+            int diff = 3 - username.Length;
+            for (int i = 0; i < diff; i++)
+            {
+                sb.Append("A");
+            }
+
+            username = sb.ToString();
+        }
+        else if (username.Length > 3)
+        {
             username = username.Substring(0, 3);
+        }
 
         AuthenticationService.Instance.UpdatePlayerNameAsync(username);
     }
@@ -106,7 +152,8 @@ public class LeaderBoardManager : MonoBehaviour
         //Add latest entries to leaderboard
         for (int i = 0; i < len; i++)
         {
-            boardEntries[i].text = $"{scoresPage.Results[i].PlayerName.ToUpper()} - {scoresPage.Results[i].Score.ToString()}";
+            string formattedName = scoresPage.Results[i].PlayerName.ToUpper().Substring(0, 3);
+            boardEntries[i].text = $"{formattedName} - {scoresPage.Results[i].Score.ToString()}";
         }
     }
 }

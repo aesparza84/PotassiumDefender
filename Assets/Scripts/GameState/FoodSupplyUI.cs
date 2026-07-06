@@ -26,10 +26,10 @@ public class FoodSupplyUI : MonoBehaviour
     private void OnEnable()
     {
         GameCurator.OnCleanUpGame += OnCleanUp;
-        GameCurator.OnInitializeGame += OnInitializeGame;
+        MenuCameraManager.OnEnterGameplay += Activate;
     }
 
-    private void OnInitializeGame(Transform obj)
+    private void Activate()
     {
         if (baseImage != null)
             baseImage.gameObject.SetActive(true);
@@ -37,7 +37,7 @@ public class FoodSupplyUI : MonoBehaviour
         if (fillImage != null)
         {
             fillImage.gameObject.SetActive(true);
-            fillImage.fillAmount = 0;    
+            fillImage.fillAmount = 0;
         }
     }
 
@@ -55,7 +55,7 @@ public class FoodSupplyUI : MonoBehaviour
     private void OnDisable()
     {
         GameCurator.OnCleanUpGame -= OnCleanUp;
-        GameCurator.OnInitializeGame -= OnInitializeGame;
+        MenuCameraManager.OnEnterGameplay -= Activate;
 
         if (foodSupply != null)
         {
