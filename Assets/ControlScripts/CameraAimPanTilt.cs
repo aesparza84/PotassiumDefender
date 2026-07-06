@@ -20,7 +20,7 @@ public class CameraAimPanTilt : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         //Initial set using the Editor fields
-        SetCameraSensitivity(x_sensitivity, y_sensitivity);
+        //SetCameraSensitivity(x_sensitivity, y_sensitivity);
     }
 
     private void Update()
@@ -43,6 +43,30 @@ public class CameraAimPanTilt : MonoBehaviour
                     y *= -1;
 
                 c.Input.Gain = y;
+            }
+        }
+    }
+
+    public void SetHorizontalSens(float x)
+    {
+        foreach (var c in cinemachineAim.Controllers)
+        {
+            if (c.Name == "Look X (Pan)")
+            {
+                c.Input.Gain = x;
+                return;
+            }
+        }
+    }
+
+    public void SetVerticalSens(float y)
+    {
+        foreach (var c in cinemachineAim.Controllers)
+        {
+            if (c.Name == "Look Y (Tilt)")
+            {
+                c.Input.Gain = y;
+                return;
             }
         }
     }

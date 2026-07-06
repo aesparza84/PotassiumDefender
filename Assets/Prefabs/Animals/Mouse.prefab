@@ -1744,6 +1744,7 @@ MonoBehaviour:
   scurryMovementSpeed: 9
   foodSupplyTransform: {fileID: 0}
   agent: {fileID: 6786358613611360903}
+  animalCollider: {fileID: 49274354232253581}
 --- !u!195 &6786358613611360903
 NavMeshAgent:
   m_ObjectHideFlags: 0

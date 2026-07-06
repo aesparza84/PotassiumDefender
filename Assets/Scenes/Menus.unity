@@ -4280,12 +4280,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 7364207}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
+  m_MaxValue: 50
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 20
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 796561071}
+        m_TargetAssemblyTypeName: CameraAimPanTilt, Assembly-CSharp
+        m_MethodName: SetHorizontalSens
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &492461583
 GameObject:
   m_ObjectHideFlags: 0
@@ -7114,6 +7126,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f9dfa5b682dcd46bda6128250e975f58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachineCamera
+--- !u!114 &796561071 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3567877234413491187, guid: 0e0bcc3a689b5b24a8f74046a3b323e6, type: 3}
+  m_PrefabInstance: {fileID: 199697221}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 796561063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01bbb663109ef934da367cc3bb691bb4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraAimPanTilt
 --- !u!1 &801509184
 GameObject:
   m_ObjectHideFlags: 0
@@ -13898,10 +13921,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -14577,12 +14600,24 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1490579868}
   m_Direction: 0
   m_MinValue: 0
-  m_MaxValue: 1
+  m_MaxValue: 50
   m_WholeNumbers: 0
-  m_Value: 0
+  m_Value: 20
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 796561071}
+        m_TargetAssemblyTypeName: CameraAimPanTilt, Assembly-CSharp
+        m_MethodName: SetVerticalSens
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1897028458
 GameObject:
   m_ObjectHideFlags: 0

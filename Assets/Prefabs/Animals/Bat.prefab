@@ -312,6 +312,7 @@ MonoBehaviour:
   scurryMovementSpeed: 5
   foodSupplyTransform: {fileID: 0}
   agent: {fileID: 3476383330368420871}
+  animalCollider: {fileID: 2467449288430730225}
 --- !u!54 &7739875937101896953
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -840,6 +841,7 @@ MonoBehaviour:
   PileBiteAnimName: BatBite
   PlayerBiteAnimName: BatBite
   MovementAnimName: BatFlying
+  crossFade: 0.3
 --- !u!1 &5251244754933008350
 GameObject:
   m_ObjectHideFlags: 0

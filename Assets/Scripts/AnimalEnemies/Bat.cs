@@ -66,6 +66,9 @@ public class Bat : Animal
                 SetTargetViaTransform(FoodSupplyTransform);
                 TravelToGoal();
 
+                if (animalCollider != null)
+                    animalCollider.enabled = true;
+
                 break;
             case AnimalState.EATING:
                 SetTargetViaTransform(null); //Full stop at position
@@ -83,7 +86,10 @@ public class Bat : Animal
                 rig.useGravity = false;
 
                 SetTargetViaPosition(pos);
-                
+
+                if (animalCollider != null)
+                    animalCollider.enabled = false;
+
                 TravelToGoal();
 
                 //Disable when scurry
