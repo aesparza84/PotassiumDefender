@@ -317,7 +317,7 @@ public class WaveGenerator : MonoBehaviour
                     }
 
                     float height = Random.Range(4.0f, 6.0f);
-                    spawnPos.y = height;
+                    spawnPos.y += height;
 
                     animalObj = getBat();
                 }

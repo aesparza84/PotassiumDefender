@@ -1,9 +1,10 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "MusicSO", menuName = "Scriptable Objects/MusicSO")]
-public class MusicSO : ScriptableObject
+public class MenuMusicSO : ScriptableObject
 {
-    public AudioClip intro;
+    public AudioClip introA;
+    public AudioClip introB;
     public AudioClip loop;
 
     [Range(0, 1)]
@@ -15,9 +16,13 @@ public class MusicSO : ScriptableObject
     [Range(0,1)]
     public float Spatial_Blend = 0;
 
-    public AudioClip getIntro()
+    public AudioClip getIntroA()
     {
-        return intro;
+        return introA;
+    }
+    public AudioClip getIntroB()
+    {
+        return introB;
     }
 
     public AudioClip getLoop()

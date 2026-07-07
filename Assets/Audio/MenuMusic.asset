@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbdadd1fa8c68d84aa4e18bc1752a627, type: 3}
   m_Name: MenuMusic
   m_EditorClassIdentifier: Assembly-CSharp::MusicSO
-  intro: {fileID: 8300000, guid: 1ec3c3744bbbc6f4bbc2700302d3ab82, type: 3}
+  introA: {fileID: 8300000, guid: 1ec3c3744bbbc6f4bbc2700302d3ab82, type: 3}
+  introB: {fileID: 8300000, guid: 855011599e4a3cb4889edd1df9fac29d, type: 3}
   loop: {fileID: 8300000, guid: 1f608d826d26c7840b1b6c78ad563036, type: 3}
   volume: 0.782
   pitch: 1

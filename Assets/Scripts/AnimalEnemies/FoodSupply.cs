@@ -11,17 +11,24 @@ public class FoodSupply : MonoBehaviour
     /// </summary>
     public static event Action OnSupplyDestroyed;
 
+
+    public static event Action OnSupplyBelowHalf;
+    public bool belowHalfCalled;
+
+
     /// <summary>
     /// Event fired when losing health
     /// </summary>
     public event Action<float> OnSupplyHit;
+
+    public static event Action OnStaticSupplyHit;
 
     private float startHeight;
     private float endHeight;
 
     void Start()
     {
-        startHeight = transform.position.y;
+        startHeight = transform.localPosition.y;
         endHeight = -startHeight;
         RestartSupply();
         
@@ -49,13 +56,20 @@ public class FoodSupply : MonoBehaviour
         float hp = (float)currSupplyCount / (float)supplyAmount;
 
         float newHeight = Mathf.Lerp(startHeight, endHeight, 1 - hp);
-        transform.position = new Vector3(transform.position.x, newHeight, transform.position.z);
+        transform.localPosition = new Vector3(transform.localPosition.x, newHeight, transform.localPosition.z);
 
+        //Notify for music layer
+        if (this.currSupplyCount <= supplyAmount * 0.5f && !belowHalfCalled)
+        {
+            OnSupplyBelowHalf?.Invoke();
+            belowHalfCalled = true;
+        } 
 
         if (this.currSupplyCount <= 0)
             DestroySupply();
 
         OnSupplyHit?.Invoke(hp);
+        OnStaticSupplyHit?.Invoke();
     }
     private void DestroySupply()
     {
@@ -66,7 +80,8 @@ public class FoodSupply : MonoBehaviour
     public void RestartSupply()
     {
         currSupplyCount = supplyAmount;
-        transform.position = new Vector3(transform.position.x, startHeight, transform.position.z);
+        transform.localPosition = new Vector3(transform.localPosition.x, startHeight, transform.localPosition.z);
+        belowHalfCalled = false;
         //gameObject.SetActive(true);
     }
 }

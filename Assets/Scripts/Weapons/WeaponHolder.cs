@@ -17,6 +17,11 @@ public class WeaponHolder : MonoBehaviour
     /// </summary>
     [SerializeField][Range(0.1f, 1)] private float aimRayRadius;
 
+    /// <summary>
+    /// How far until raycast locks onto a target
+    /// </summary>
+    [SerializeField][Range(0.1f, 10)] private float minFreeAim;
+
     [SerializeField] private BaseWeapon activeWeapon;
 
     //Debug
@@ -43,10 +48,9 @@ public class WeaponHolder : MonoBehaviour
 
         if (Physics.SphereCast(rayOrigin.position, aimRayRadius, rayOrigin.forward, out RaycastHit hit, maxRayDistance, aimRayMask))
         {
-            hitPoint = hit.point;
-        }
-
-        
+            if (hit.distance > minFreeAim)
+                hitPoint = hit.point;
+        }        
     }
 
     /// <summary>
