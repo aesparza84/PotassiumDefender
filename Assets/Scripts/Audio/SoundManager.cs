@@ -20,6 +20,18 @@ public class SoundManager : MonoBehaviour
     private void Start()
     {
         availableSoundPrefabs = new Stack<AudioSource>();
+        WarmMusicSources();
+    }
+
+    private void WarmMusicSources()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            AudioSource s = Instantiate(soundPrefab, transform.position, Quaternion.identity);
+            s.playOnAwake = false;
+            s.gameObject.SetActive(false);
+            availableSoundPrefabs.Push(s);
+        }
     }
 
     public void PlaySound(SoundSO clipSO, Transform transform)

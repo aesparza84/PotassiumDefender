@@ -44,6 +44,9 @@ public abstract class Animal : MonoBehaviour
     public NavMeshAgent agent;
     /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
+    [SerializeField] protected CapsuleCollider animalCollider;
+
+
     /// <summary>
     /// Event when animal fills hunger
     /// </summary>
@@ -139,6 +142,9 @@ public abstract class Animal : MonoBehaviour
                 TravelToGoal();
                 transform.LookAt(goalPos);
 
+                if (animalCollider != null)
+                    animalCollider.enabled = true;
+
                 OnApproach?.Invoke();
                 break;
             case AnimalState.EATING:
@@ -161,6 +167,9 @@ public abstract class Animal : MonoBehaviour
 
                 //Disable when scurry
                 Invoke("DisableAnimal", 3.0f);
+
+                if (animalCollider != null)
+                    animalCollider.enabled = false;
 
                 OnScurry?.Invoke();
                 break;

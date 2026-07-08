@@ -47,4 +47,32 @@ public class CameraAimPanTilt : MonoBehaviour
         }
     }
 
+    public void SetHorizontalSens(float x)
+    {
+        //foreach (var c in cinemachineAim.Controllers)
+        //{
+        //    if (c.Name == "Look X (Pan)")
+        //    {
+        //        c.Input.Gain = x;
+        //        return;
+        //    }
+        //}
+
+        x_sensitivity = x;
+    }
+
+    public void SetVerticalSens(float y)
+    {
+        //foreach (var c in cinemachineAim.Controllers)
+        //{
+        //    if (c.Name == "Look Y (Tilt)")
+        //    {
+        //        c.Input.Gain = y;
+        //        return;
+        //    }
+        //}
+
+        y_sensitivity = y;
+    }
+
 }

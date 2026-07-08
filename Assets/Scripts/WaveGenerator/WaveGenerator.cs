@@ -107,6 +107,8 @@ public class WaveGenerator : MonoBehaviour
 
         //StartOff
         OnCleanUp();
+
+        WarmUpAnimals();
     }
 
     private void OnEnable()
@@ -226,6 +228,61 @@ public class WaveGenerator : MonoBehaviour
         }
     }
 
+    private void WarmUpAnimals()
+    {
+        //Mice
+        for (int i = 0; i < 10; i++)
+        {
+            warmSpawnAnimal(AnimalType.MICE);
+        }
+
+        //Bats
+        for (int i = 0; i < 10; i++)
+        {
+            warmSpawnAnimal(AnimalType.BAT);
+        }
+
+        //Pigs
+        for (int i = 0; i < 10; i++)
+        {
+            warmSpawnAnimal(AnimalType.PIG);
+        }
+    }
+
+    private void warmSpawnAnimal(AnimalType type)
+    {
+        Vector3 spawnPos = chooseSpawnPos();
+        Vector3 dirToSupply = FoodSupplyTransform.position - spawnPos;
+        Quaternion lookRot = Quaternion.LookRotation(dirToSupply.normalized);
+
+        GameObject animalObj;
+        Animal animal;
+
+        switch (type)
+        {
+            case AnimalType.MICE:
+                animalObj= Instantiate(MicePrefab, transform.position, Quaternion.identity);
+                animalObj.SetActive(false);
+                availableMice.Push(animalObj);
+                break;
+            case AnimalType.BAT:
+
+                animalObj = Instantiate(BatPrefab);
+                animalObj.SetActive(false);
+                availableBats.Push(animalObj);
+                break;
+            case AnimalType.PIG:
+
+                animalObj = Instantiate(PigPrefab, transform.position, Quaternion.identity);
+                animalObj.SetActive(false);
+                availablePigs.Push(animalObj);
+                break;
+            default:
+                break;
+        }
+
+    }
+
     private void spawnAnimal()
     {
         Vector3 spawnPos = chooseSpawnPos();
@@ -260,7 +317,7 @@ public class WaveGenerator : MonoBehaviour
                     }
 
                     float height = Random.Range(4.0f, 6.0f);
-                    spawnPos.y = height;
+                    spawnPos.y += height;
 
                     animalObj = getBat();
                 }

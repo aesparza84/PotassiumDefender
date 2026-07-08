@@ -3,6 +3,7 @@ using UnityEngine;
 public class DefaultProjectile : MonoBehaviour, IProjectile
 {
     [SerializeField] private GameObject projectileObject;
+    [SerializeField] private ImpactSounds impactSound;
     
     private int fillAmount; 
     private float speed;
@@ -33,7 +34,7 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
         isActive = false;
         projectileObject.SetActive(false);
 
-
+        
 
         //Destroy --TEMP
         Destroy(gameObject);
@@ -70,6 +71,25 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
         this.speed = weaponSpeed;
     }
 
+    //private void OnCollisionEnter(Collision other)
+    //{
+    //    if (other.gameObject.CompareTag("Animal"))
+    //    {
+    //        Debug.Log("Animal Hit");
+    //        ParticleManager.Instance.PlayBanannaImpact(other.transform.position);
+
+    //        if (other.gameObject.transform.parent.TryGetComponent<Animal>(out Animal a))
+    //        {
+    //            if (impactSound != null)
+    //                impactSound.OnImpact(gameObject.transform);
+
+    //            a.FillHunger(true);
+    //        }
+    //    }
+
+    //    DisableProjectile();
+    //}
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Animal"))
@@ -79,6 +99,9 @@ public class DefaultProjectile : MonoBehaviour, IProjectile
 
             if (other.gameObject.transform.parent.TryGetComponent<Animal>(out Animal a))
             {
+                if (impactSound != null)
+                    impactSound.OnImpact(gameObject.transform);
+
                 a.FillHunger(true);
             }
         }

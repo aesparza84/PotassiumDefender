@@ -18,6 +18,8 @@ public class MenuCameraManager : MonoBehaviour
     [SerializeField]
     private ScoreTracker tracker; //temp placement
 
+    public static event Action OnEnterGameplay;
+
     void Awake()
     {
         UpdateCurrentCamera(menuType.MainMenu);
@@ -67,6 +69,8 @@ public class MenuCameraManager : MonoBehaviour
         switch (menu)
         { 
             case menuType.MainMenu:
+                Cursor.lockState = CursorLockMode.None;
+                break;
             case menuType.QuitMenu:
             case menuType.LeaderboardMenu:
             case menuType.SettingsMenu:
@@ -76,8 +80,11 @@ public class MenuCameraManager : MonoBehaviour
                 break;
             
             case menuType.GameplayMenu:
-            case menuType.TransitionMenu:
                 Cursor.lockState = CursorLockMode.Locked;
+                OnEnterGameplay?.Invoke();
+                break;
+            case menuType.TransitionMenu:
+                Cursor.lockState = CursorLockMode.None;
                 break;
 
         }

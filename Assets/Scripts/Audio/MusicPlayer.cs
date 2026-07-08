@@ -4,28 +4,102 @@ using UnityEngine;
 
 public class MusicPlayer : MonoBehaviour
 {
-    [SerializeField] private MusicSO menuMusicSO;
-    [SerializeField] private AudioSource[] sources;
+    [SerializeField] private MenuMusicSO menuMusicSO;
+    [SerializeField] private LayeredMusicSO gameplayLayersSO;
+    [SerializeField] private AudioSource[] MenuSources;
+    [SerializeField] private AudioSource[] GameplaySources;
 
     private double currClipDur;
     private double goalTime;
     private bool usePrimarySource;
-    
+    private bool menuMode;
+
+    //Gameplay fields
+    private float layerTargetVol;
+    private float currlayerLerp;
+
     private void Start()
     {
-        PlayClip(menuMusicSO, true);
+        menuMode = true;
+
+        PlayMenuMusic(menuMusicSO, true, false);
+
+        for (int i = 0; i < GameplaySources.Length; i++)
+        {
+            if (GameplaySources[i] != null)
+                GameplaySources[i].loop = true;
+        }
+
+        GameCurator.OnInitializeGame += OnGameplayMusic;
+        GameCurator.OnCleanUpGame += OnMenuMusic;
+        FoodSupply.OnSupplyBelowHalf += OnLayerB;
+    }
+
+    private void OnLayerB()
+    {
+        layerTargetVol = 1;
+    }
+
+    private void OnDisable()
+    {
+        GameCurator.OnInitializeGame -= OnGameplayMusic;
+        GameCurator.OnCleanUpGame -= OnMenuMusic;
+        FoodSupply.OnSupplyBelowHalf -= OnLayerB;
+    }
+    private void OnMenuMusic()
+    {
+        menuMode = true;
+        for (int i = 0; i < GameplaySources.Length; i++)
+        {
+            if (GameplaySources[i] != null)
+            {
+                GameplaySources[i].Stop();
+                GameplaySources[i].volume = 0;
+            }
+        }
+
+        layerTargetVol = 0.0f;
+
+        PlayMenuMusic(menuMusicSO, true, true);
+    }
+
+    private void OnGameplayMusic(Transform obj)
+    {
+        menuMode = false;
+        currlayerLerp = 0.0f;
+
+        for (int i = 0; i < MenuSources.Length; i++)
+        {
+            if (MenuSources[i] != null)
+                MenuSources[i].Stop();
+        }
+
+        PlayGameplayClip(gameplayLayersSO);
     }
 
     private void Update()
     {
-        if (AudioSettings.dspTime > goalTime)
+
+
+        if (menuMode)
         {
-            PlayClip(menuMusicSO, false);
+            if (AudioSettings.dspTime > goalTime)
+            {
+                PlayMenuMusic(menuMusicSO, false, false);
+            }
         }
+        else
+        {
+            if (layerTargetVol != 0)
+            {
+                currlayerLerp += Time.deltaTime * 3;
+                GameplaySources[1].volume = Mathf.Lerp(0, layerTargetVol, currlayerLerp);
+            }
+        }
+
     }
 
-
-    private void PlayClip(MusicSO music, bool isIntro)
+    private void PlayMenuMusic(MenuMusicSO music, bool isIntro, bool comingFromGameOver)
     {
         goalTime = AudioSettings.dspTime;
 
@@ -34,16 +108,23 @@ public class MusicPlayer : MonoBehaviour
 
         if (usePrimarySource)
         {
-            s = sources[0];
+            s = MenuSources[0];
         }
         else
         {
-            s = sources[1];
+            s = MenuSources[1];
         }
 
         if (isIntro)
         {
-            clip = music.intro;
+            if (comingFromGameOver)
+            {
+                clip = music.introB;
+            }
+            else
+            {
+                clip = music.introA;
+            }
         }
         else
         {
@@ -61,5 +142,30 @@ public class MusicPlayer : MonoBehaviour
         goalTime += currClipDur;
 
         usePrimarySource = !usePrimarySource;
+    }
+    private void PlayGameplayClip(LayeredMusicSO music)
+    {
+        AudioClip layerA = music.getLayerA();
+        AudioClip layerB = music.getLayerB();
+
+        if (GameplaySources.Length < 2)
+        {
+            Debug.Log("Missing gameplay source audio");
+            return;
+        }
+
+        if (GameplaySources[0] != null)
+        {
+            GameplaySources[0].volume = 1;
+            GameplaySources[0].clip = layerA;
+            GameplaySources[0].Play();
+        }
+        
+        if (GameplaySources[1] != null)
+        {
+            GameplaySources[1].volume = 0;
+            GameplaySources[1].clip = layerB;
+            GameplaySources[1].Play();
+        }
     }
 }
