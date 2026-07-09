@@ -1,3 +1,4 @@
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,7 @@ public class FoodSupplyUI : MonoBehaviour
     [SerializeField] private Canvas canvas;
     [SerializeField] private Image baseImage;
     [SerializeField] private Image fillImage;
+    [SerializeField] private TextMeshProUGUI UI_Num;
     private FoodSupply foodSupply;
 
     [SerializeField] private bool showUI;
@@ -39,6 +41,12 @@ public class FoodSupplyUI : MonoBehaviour
             fillImage.gameObject.SetActive(true);
             fillImage.fillAmount = 0;
         }
+
+        if (UI_Num != null)
+        {
+            UI_Num.gameObject.SetActive(true);
+            UI_Num.text = "100%";
+        }
     }
 
     private void OnCleanUp()
@@ -49,6 +57,11 @@ public class FoodSupplyUI : MonoBehaviour
         if (fillImage != null)
         {
             fillImage.gameObject.SetActive(false);
+        }
+
+        if (UI_Num != null)
+        {
+            UI_Num.gameObject.SetActive(false);
         }
     }
 
@@ -69,6 +82,9 @@ public class FoodSupplyUI : MonoBehaviour
             return;
 
         fillImage.fillAmount = 1-obj;
+
+        if (UI_Num != null)
+            UI_Num.text = $"{(100-(1 - obj)*100).ToString()}%";
     }
 
     private void Update()

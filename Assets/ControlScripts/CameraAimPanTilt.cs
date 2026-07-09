@@ -20,7 +20,14 @@ public class CameraAimPanTilt : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
 
         //Initial set using the Editor fields
-        SetCameraSensitivity(x_sensitivity, y_sensitivity);
+        if(cinemachineAim != null)
+            SetCameraSensitivity(x_sensitivity, y_sensitivity);
+    }
+
+    private void OnEnable()
+    {
+        if(cinemachineAim != null)
+            SetCameraSensitivity(x_sensitivity, y_sensitivity);
     }
 
     private void Update()
