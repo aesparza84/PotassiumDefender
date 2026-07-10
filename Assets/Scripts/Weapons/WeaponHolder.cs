@@ -27,7 +27,7 @@ public class WeaponHolder : MonoBehaviour
     //Debug
     private Vector3 hitPoint;
 
-    private const int aimRayMask = ~((1 << 17) | (1 << 11));
+    private const int aimRayMask = ~((1 << 17) | (1 << 11) | (1 << 5));
 
     private void Start()
     {

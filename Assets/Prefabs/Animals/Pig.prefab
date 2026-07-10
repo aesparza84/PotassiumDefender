@@ -463,7 +463,7 @@ MonoBehaviour:
   animalPointAmount: 10
   animalHungerMax: 3
   feedDelay: 2
-  approachMovementSpeed: 4
+  approachMovementSpeed: 2.8
   scurryMovementSpeed: 9
   foodSupplyTransform: {fileID: 0}
   agent: {fileID: 6458009915367532332}
