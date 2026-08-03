@@ -1,5 +1,4 @@
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -84,7 +83,10 @@ public class FoodSupplyUI : MonoBehaviour
         fillImage.fillAmount = 1-obj;
 
         if (UI_Num != null)
-            UI_Num.text = $"{(100-(1 - obj)*100).ToString()}%";
+        {
+            float val = (100 - (1 - obj) * 100);
+            UI_Num.text = $"{val.ToString("0.0")}%";
+        }
     }
 
     private void Update()
